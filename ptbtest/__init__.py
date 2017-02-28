@@ -24,4 +24,4 @@ from .usergenerator import UserGenerator
 from .chatgenerator import ChatGenerator
 from .messagegenerator import MessageGenerator
 
-__all__ = [Mockbot, UserGenerator, ChatGenerator, MessageGenerator]
+__all__ = ["Mockbot", "UserGenerator", "ChatGenerator", "MessageGenerator"]
