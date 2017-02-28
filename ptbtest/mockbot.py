@@ -37,9 +37,25 @@ class Mockbot(TelegramObject):
     All methods as described :py:class:`telegram.Bot` telegram.Bot are functional and describer here are only
     the special methods added for testing functionality
 
-    Args:
-        username (Optional[str]): Username for this bot. Defaults to 'MockBot'
-    """
+
+
+    Attributes:
+        sent_messages ([dict<sent message>]): A list of every message sent with this bot.
+
+    It will contain
+    the data dict usually passed to the methods actually sending data to telegram. With an added field
+    named ``method`` which will contain the method used to send this message to the server.
+
+    Examples:
+        A call to ``sendMessage(1, "hello")`` will return the following::
+
+        {'text': 'hello', 'chat_id': 1, 'method': 'sendMessage'}
+
+        A call to ``editMessageText(text="test 2", inline_message_id=404, disable_web_page_preview=True)``::
+
+        {'inline_message_id': 404, 'text': 'test 2', 'method': 'editMessageText', 'disable_web_page_preview': True}
+    Parameters:
+        username (Optional[str]): Username for this bot. Defaults to 'MockBot'"""
 
     def __init__(self, username="MockBot"):
         self._updates = []
@@ -49,23 +65,6 @@ class Mockbot(TelegramObject):
 
     @property
     def sent_messages(self):
-        """
-        Returns a list of every message sent with this bot. It will contain the data dict usually
-        passed to the methods actually sending data to telegram. With an added field named ``method``
-        which will contain the method used to send this message to the server.
-
-        Examples:
-            A call to ``sendMessage(1, "hello")`` will return the following::
-
-            {'text': 'hello', 'chat_id': 1, 'method': 'sendMessage'}
-
-            A call to ``editMessageText(text="test 2", inline_message_id=404, disable_web_page_preview=True)``::
-
-            {'inline_message_id': 404, 'text': 'test 2', 'method': 'editMessageText', 'disable_web_page_preview': True}
-
-        Returns:
-            [dict<sent message>]: A list of data dictionaries
-        """
         return self._sendmessages
 
     @property
