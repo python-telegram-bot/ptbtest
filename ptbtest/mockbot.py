@@ -18,6 +18,7 @@
 #
 # You should have received a copy of the GNU Lesser Public License
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
+"""This module provides a class for a Mockbot"""
 
 import functools
 import logging
@@ -30,6 +31,16 @@ logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 
 class Mockbot(TelegramObject):
+    """
+    The Mockbot is a fake telegram-bot that does not require a token or a connection to the telegram
+    servers. It's used to mimmick all methods of python-telegram-bot instance, but never contact the telegram servers.
+    All methods as described :py:class:`telegram.Bot` telegram.Bot are functional and describer here are only
+    the special methods added for testing functionality
+
+    Args:
+        username (Optional[str]): Username for this bot. Defaults to 'MockBot'
+    """
+
     def __init__(self, username="MockBot"):
         self._updates = []
         self.bot = None
@@ -38,6 +49,23 @@ class Mockbot(TelegramObject):
 
     @property
     def sent_messages(self):
+        """
+        Returns a list of every message sent with this bot. It will contain the data dict usually
+        passed to the methods actually sending data to telegram. With an added field named ``method``
+        which will contain the method used to send this message to the server.
+
+        Examples:
+            A call to ``sendMessage(1, "hello")`` will return the following::
+
+            {'text': 'hello', 'chat_id': 1, 'method': 'sendMessage'}
+
+            A call to ``editMessageText(text="test 2", inline_message_id=404, disable_web_page_preview=True)``::
+
+            {'inline_message_id': 404, 'text': 'test 2', 'method': 'editMessageText', 'disable_web_page_preview': True}
+
+        Returns:
+            [dict<sent message>]: A list of data dictionaries
+        """
         return self._sendmessages
 
     @property
@@ -47,6 +75,9 @@ class Mockbot(TelegramObject):
         return tmp
 
     def reset(self):
+        """
+        Resets the ``sent_messages`` property to an empty list.
+        """
         self._sendmessages = []
 
     def info(func):
@@ -497,6 +528,17 @@ class Mockbot(TelegramObject):
 
         return data
 
+    def insertUpdate(self, update):
+        """
+        This inserts an update into the the bot's storage. these will be retreived on a call to
+        getUpdates which is used by the :py:class:`telegram.Updater`. This way the updater can function without any
+        modifications.
+
+        Args:
+            update (telegram.Update): The update to insert in the queue.
+        """
+        self._updates.append(update)
+
     def getUpdates(self,
                    offset=None,
                    limit=100,
@@ -505,9 +547,6 @@ class Mockbot(TelegramObject):
                    read_latency=2.,
                    **kwargs):
         return self.updates
-
-    def insertUpdate(self, update):
-        self._updates.append(update)
 
     def setWebhook(self, webhook_url=None, certificate=None, timeout=None, **kwargs):
         return None
