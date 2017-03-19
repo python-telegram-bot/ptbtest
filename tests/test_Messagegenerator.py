@@ -38,6 +38,11 @@ class TestMessageGeneratorCore(unittest.TestCase):
         u = self.mg.get_message(private=True)
         self.assertEqual(u.message.from_user.id, u.message.chat.id)
 
+    def test_not_private(self):
+        u = self.mg.get_message(private=False)
+        self.assertEqual(u.message.chat.type, "group")
+        self.assertNotEqual(u.message.from_user.id, u.message.chat.id)
+
     def test_with_user(self):
         ug = UserGenerator()
         us = ug.get_user()
