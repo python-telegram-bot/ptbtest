@@ -27,15 +27,21 @@ import random
 class UpdateGenerator(PtbGenerator):
     """User generator class. placeholder for random names and mainly used
         via it's get_user() method"""
-    FIRST_NAMES = ["James", "Mary", "John", "Patricia", "Robert", "Jennifer", "Michael", "Elizabeth", "William",
-                   "Linda", "David", "Barbara", "Richard", "Susan", "Joseph", "Jessica", "Thomas", "Margaret",
-                   "Charles", "Sarah"]
-    LAST_NAMES = ["Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller", "Wilson", "Moore", "Taylor"]
+    FIRST_NAMES = [
+        "James", "Mary", "John", "Patricia", "Robert", "Jennifer", "Michael",
+        "Elizabeth", "William", "Linda", "David", "Barbara", "Richard",
+        "Susan", "Joseph", "Jessica", "Thomas", "Margaret", "Charles", "Sarah"
+    ]
+    LAST_NAMES = [
+        "Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller",
+        "Wilson", "Moore", "Taylor"
+    ]
 
     def __init__(self):
         PtbGenerator.__init__(self)
 
-    def get_user(self, first_name=None, last_name=None, username=None, id=None):
+    def get_user(self, first_name=None, last_name=None, username=None,
+                 id=None):
         """
         Returns a telegram.User object with the optionally given name(s) or username
         If any of the arguments are omitted the names will be chosen randomly and the
@@ -55,5 +61,9 @@ class UpdateGenerator(PtbGenerator):
         if not last_name:
             last_name = random.choice(self.LAST_NAMES)
         if not username:
-            username = first_name+last_name
-        return User(id or self.gen_id(), first_name, last_name=last_name, username=username)
+            username = first_name + last_name
+        return User(
+            id or self.gen_id(),
+            first_name,
+            last_name=last_name,
+            username=username)

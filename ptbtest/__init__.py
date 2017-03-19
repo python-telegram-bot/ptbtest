@@ -27,4 +27,7 @@ from .updategenerator import UpdateGenerator
 from .errors import BadUserException
 from .errors import BadChatException
 
-__all__ = ["BadUserException", "BadChatException","Mockbot", "UserGenerator", "ChatGenerator", "MessageGenerator", "UpdateGenerator"]
+__all__ = [
+    "BadUserException", "BadChatException", "Mockbot", "UserGenerator",
+    "ChatGenerator", "MessageGenerator", "UpdateGenerator"
+]

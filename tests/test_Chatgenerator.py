@@ -83,7 +83,8 @@ class TestChatGenerator(unittest.TestCase):
         self.assertEqual(c.username, "mygroup")
 
     def test_supergroup_with_username_title(self):
-        c = self.cg.get_chat(type="supergroup", username="mygroup", title="Awesome Group")
+        c = self.cg.get_chat(
+            type="supergroup", username="mygroup", title="Awesome Group")
 
         self.assertEqual(c.title, "Awesome Group")
         self.assertEqual(c.username, "mygroup")
@@ -106,7 +107,8 @@ class TestChatGenerator(unittest.TestCase):
         self.assertEqual(c.username, "mygroup")
 
     def test_supergroup_with_username_title(self):
-        c = self.cg.get_chat(type="channel", username="mygroup", title="Awesome Group")
+        c = self.cg.get_chat(
+            type="channel", username="mygroup", title="Awesome Group")
 
         self.assertEqual(c.title, "Awesome Group")
         self.assertEqual(c.username, "mygroup")

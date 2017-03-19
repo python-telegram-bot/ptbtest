@@ -42,16 +42,21 @@ class TestMockbot(unittest.TestCase):
         # handler method
         def start(bot, update):
             bot.sendMessage(update.message.chat_id, "this works")
+
         updater = Updater(workers=2, bot=self.mockbot)
         dp = updater.dispatcher
         dp.add_handler(CommandHandler("start", start))
         updater.start_polling()
         user = User(id=1, first_name="test")
         chat = Chat(45, "group")
-        message = Message(404, user, None, chat, text="/start", bot=self.mockbot)
-        message2 = Message(404, user, None, chat, text="start", bot=self.mockbot)
-        message3 = Message(404, user, None, chat, text="/start@MockBot", bot=self.mockbot)
-        message4 = Message(404, user, None, chat, text="/start@OtherBot", bot=self.mockbot)
+        message = Message(
+            404, user, None, chat, text="/start", bot=self.mockbot)
+        message2 = Message(
+            404, user, None, chat, text="start", bot=self.mockbot)
+        message3 = Message(
+            404, user, None, chat, text="/start@MockBot", bot=self.mockbot)
+        message4 = Message(
+            404, user, None, chat, text="/start@OtherBot", bot=self.mockbot)
         self.mockbot.insertUpdate(Update(0, message=message))
         self.mockbot.insertUpdate(Update(1, message=message2))
         self.mockbot.insertUpdate(Update(1, message=message3))
@@ -77,7 +82,6 @@ class TestMockbot(unittest.TestCase):
         self.mockbot.reset()
         self.assertEqual(len(self.mockbot.sent_messages), 0)
 
-
     def test_answerCallbackQuery(self):
         self.mockbot.answerCallbackQuery(1, "done")
 
@@ -86,7 +90,9 @@ class TestMockbot(unittest.TestCase):
         self.assertEqual(data['text'], "done")
 
     def test_answerInlineQuery(self):
-        r = [InlineQueryResult("string", "1"), InlineQueryResult("string", "2")]
+        r = [
+            InlineQueryResult("string", "1"), InlineQueryResult("string", "2")
+        ]
         self.mockbot.answerInlineQuery(1, r)
 
         data = self.mockbot.sent_messages[-1]
@@ -264,18 +270,24 @@ class TestMockbot(unittest.TestCase):
         self.assertEqual(data['chat_id'], 1)
 
     def test_sendMessage(self):
-        keyb = InlineKeyboardMarkup([[
-            InlineKeyboardButton("test 1", callback_data="test1")
-        ],
-            [InlineKeyboardButton("test 2", callback_data="test2")]
-        ])
-        self.mockbot.sendMessage(1, "test", parse_mode=telegram.ParseMode.MARKDOWN, reply_markup=keyb)
+        keyb = InlineKeyboardMarkup(
+            [[InlineKeyboardButton(
+                "test 1", callback_data="test1")],
+             [InlineKeyboardButton(
+                 "test 2", callback_data="test2")]])
+        self.mockbot.sendMessage(
+            1,
+            "test",
+            parse_mode=telegram.ParseMode.MARKDOWN,
+            reply_markup=keyb)
         data = self.mockbot.sent_messages[-1]
 
         self.assertEqual(data['method'], "sendMessage")
         self.assertEqual(data['chat_id'], 1)
         self.assertEqual(data['text'], "test")
-        self.assertEqual(eval(data['reply_markup'])['inline_keyboard'][1][0]['callback_data'], "test2")
+        self.assertEqual(
+            eval(data['reply_markup'])['inline_keyboard'][1][0][
+                'callback_data'], "test2")
 
     def test_sendPhoto(self):
         self.mockbot.sendPhoto(1, "test.png")

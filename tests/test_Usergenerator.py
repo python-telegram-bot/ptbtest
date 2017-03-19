@@ -24,18 +24,16 @@ import unittest
 from ptbtest import UserGenerator
 
 
-
 class TestUserGenerator(unittest.TestCase):
     def setUp(self):
         self.ug = UserGenerator()
-
 
     def test_no_specification(self):
         u = self.ug.get_user()
         self.assertIsInstance(u.id, int)
         self.assertTrue(u.id > 0)
         self.assertIsInstance(u.first_name, str)
-        self.assertEqual(u.username, u.first_name+u.last_name)
+        self.assertEqual(u.username, u.first_name + u.last_name)
 
     def test_with_first_name(self):
         u = self.ug.get_user(first_name="Test")

@@ -55,8 +55,11 @@ class MessageGenerator(PtbGenerator):
             if not isinstance(chat, Chat):
                 raise BadChatException
             if chat.type == "private":
-                user = self.ug.get_user(first_name=chat.first_name, last_name=chat.last_name,
-                                        username=chat.username, id=chat.id)
+                user = self.ug.get_user(
+                    first_name=chat.first_name,
+                    last_name=chat.last_name,
+                    username=chat.username,
+                    id=chat.id)
             else:
                 user = self.ug.get_user()
         elif user and private:
@@ -75,7 +78,10 @@ class MessageGenerator(PtbGenerator):
             chat = self.cg.get_chat(type="group")
         return user, chat
 
-    def get_message(self, user=None, chat=None, private=True,
+    def get_message(self,
+                    user=None,
+                    chat=None,
+                    private=True,
                     forward_from=None,
                     forward_from_chat=None,
                     reply_to_message=None,
@@ -102,8 +108,7 @@ class MessageGenerator(PtbGenerator):
                     migrate_from_chat_id=None,
                     channel_chat_created=False,
                     pinned_message=None,
-                    forward_from_message_id=None
-                    ):
+                    forward_from_message_id=None):
         """
         Returns a telegram.Message object
 
@@ -112,7 +117,7 @@ class MessageGenerator(PtbGenerator):
 
         Args:
             forward_from_message_id (Optional[int]):
-            pinned_message (Optional[telegram.Message]): 
+            pinned_message (Optional[telegram.Message]):
             channel_chat_created (Optional[True]):
             migrate_from_chat_id (Optional[int]):
             migrate_to_chat_id (Optional[int]):
@@ -122,21 +127,21 @@ class MessageGenerator(PtbGenerator):
             new_chat_photo (Optional[lst(telegram.Photosize)]):
             new_chat_title (Optional[str]):
             left_chat_member (Optional[telegram.User]):
-            new_chat_member (Optional[telegram.User]): 
+            new_chat_member (Optional[telegram.User]):
             venue (Optional[telegram.Venue]):
             location (optional[telegram.Location]):
-            contact (optional[telegram.Contact]): 
-            caption (Optional[str]): 
-            voice (Optional[telegram.Voice]): 
+            contact (optional[telegram.Contact]):
+            caption (Optional[str]):
+            voice (Optional[telegram.Voice]):
             video (Optional[telegram.Video]):
             sticker (Optional[telegram.Sticker]):
             photo (Optional[lst(telegram.PhotoSize)]):
-            document (Optional[telegram.Document]): 
-            audio (Optional[telegram.Audio]): 
-            entities (Optional[lst(telegram.MessageEntity)]): 
-            reply_to_message (Optional[telegram.Message): 
-            forward_from_chat (Optional[telegram.Chat]): 
-            forward_from (Optional[telegram.User): 
+            document (Optional[telegram.Document]):
+            audio (Optional[telegram.Audio]):
+            entities (Optional[lst(telegram.MessageEntity)]):
+            reply_to_message (Optional[telegram.Message):
+            forward_from_chat (Optional[telegram.Chat]):
+            forward_from (Optional[telegram.User):
             text (str): The text for the message
             private (Optional[bool]): If the message is private (optionally with the supplied user) default=True
             chat (Optional[telegram.Chat]): Chat the message is from (m.chat).
@@ -146,30 +151,35 @@ class MessageGenerator(PtbGenerator):
             telegram.Message: A telegram Message object.
         """
         user, chat = self._get_user_and_chat(user, chat, private)
-        return Message(self.idgen.next(), user, None, chat, text=text, forward_from=forward_from,
-                       forward_from_chat=forward_from_chat,
-                       reply_to_message=reply_to_message,
-                       edit_date=edit_date,
-                       entities=entities,
-                       audio=audio,
-                       document=document,
-                       photo=photo,
-                       sticker=sticker,
-                       video=video,
-                       voice=voice,
-                       caption=caption,
-                       contact=contact,
-                       location=location,
-                       venue=venue,
-                       new_chat_member=new_chat_member,
-                       left_chat_member=left_chat_member,
-                       new_chat_title=new_chat_title,
-                       new_chat_photo=new_chat_photo,
-                       delete_chat_photo=delete_chat_photo,
-                       group_chat_created=group_chat_created,
-                       supergroup_chat_created=supergroup_chat_created,
-                       migrate_to_chat_id=migrate_to_chat_id,
-                       migrate_from_chat_id=migrate_from_chat_id,
-                       channel_chat_created=channel_chat_created,
-                       pinned_message=pinned_message,
-                       forward_from_message_id=forward_from_message_id)
+        return Message(
+            self.idgen.next(),
+            user,
+            None,
+            chat,
+            text=text,
+            forward_from=forward_from,
+            forward_from_chat=forward_from_chat,
+            reply_to_message=reply_to_message,
+            entities=entities,
+            audio=audio,
+            document=document,
+            photo=photo,
+            sticker=sticker,
+            video=video,
+            voice=voice,
+            caption=caption,
+            contact=contact,
+            location=location,
+            venue=venue,
+            new_chat_member=new_chat_member,
+            left_chat_member=left_chat_member,
+            new_chat_title=new_chat_title,
+            new_chat_photo=new_chat_photo,
+            delete_chat_photo=delete_chat_photo,
+            group_chat_created=group_chat_created,
+            supergroup_chat_created=supergroup_chat_created,
+            migrate_to_chat_id=migrate_to_chat_id,
+            migrate_from_chat_id=migrate_from_chat_id,
+            channel_chat_created=channel_chat_created,
+            pinned_message=pinned_message,
+            forward_from_message_id=forward_from_message_id)

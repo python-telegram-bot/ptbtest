@@ -80,7 +80,6 @@ class Mockbot(TelegramObject):
         self._sendmessages = []
 
     def info(func):
-
         @functools.wraps(func)
         def decorator(self, *args, **kwargs):
             if not self.bot:
@@ -116,7 +115,6 @@ class Mockbot(TelegramObject):
         return '@{0}'.format(self.username)
 
     def message(func):
-
         @functools.wraps(func)
         def decorator(self, *args, **kwargs):
             data = func(self, *args, **kwargs)
@@ -125,7 +123,8 @@ class Mockbot(TelegramObject):
                 data['reply_to_message_id'] = kwargs.get('reply_to_message_id')
 
             if kwargs.get('disable_notification'):
-                data['disable_notification'] = kwargs.get('disable_notification')
+                data['disable_notification'] = kwargs.get(
+                    'disable_notification')
 
             if kwargs.get('reply_markup'):
                 reply_markup = kwargs.get('reply_markup')
@@ -307,7 +306,11 @@ class Mockbot(TelegramObject):
                      reply_markup=None,
                      timeout=None,
                      **kwargs):
-        data = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude}
+        data = {
+            'chat_id': chat_id,
+            'latitude': latitude,
+            'longitude': longitude
+        }
 
         return data
 
@@ -348,7 +351,11 @@ class Mockbot(TelegramObject):
                     reply_markup=None,
                     timeout=None,
                     **kwargs):
-        data = {'chat_id': chat_id, 'phone_number': phone_number, 'first_name': first_name}
+        data = {
+            'chat_id': chat_id,
+            'phone_number': phone_number,
+            'first_name': first_name
+        }
 
         if last_name:
             data['last_name'] = last_name
@@ -395,7 +402,12 @@ class Mockbot(TelegramObject):
 
         self._sendmessages.append(data)
 
-    def getUserProfilePhotos(self, user_id, offset=None, limit=100, timeout=None, **kwargs):
+    def getUserProfilePhotos(self,
+                             user_id,
+                             offset=None,
+                             limit=100,
+                             timeout=None,
+                             **kwargs):
         data = {'user_id': user_id}
 
         if offset:
@@ -485,7 +497,8 @@ class Mockbot(TelegramObject):
                            reply_markup=None,
                            timeout=None,
                            **kwargs):
-        if inline_message_id is None and (chat_id is None or message_id is None):
+        if inline_message_id is None and (chat_id is None or
+                                          message_id is None):
             raise TelegramError(
                 'editMessageCaption: Both chat_id and message_id are required when '
                 'inline_message_id is not specified')
@@ -511,7 +524,8 @@ class Mockbot(TelegramObject):
                                reply_markup=None,
                                timeout=None,
                                **kwargs):
-        if inline_message_id is None and (chat_id is None or message_id is None):
+        if inline_message_id is None and (chat_id is None or
+                                          message_id is None):
             raise TelegramError(
                 'editMessageCaption: Both chat_id and message_id are required when '
                 'inline_message_id is not specified')
@@ -547,7 +561,11 @@ class Mockbot(TelegramObject):
                    **kwargs):
         return self.updates
 
-    def setWebhook(self, webhook_url=None, certificate=None, timeout=None, **kwargs):
+    def setWebhook(self,
+                   webhook_url=None,
+                   certificate=None,
+                   timeout=None,
+                   **kwargs):
         return None
 
     def leaveChat(self, chat_id, timeout=None, **kwargs):
@@ -609,11 +627,13 @@ class Mockbot(TelegramObject):
         if disable_edit_message is not None:
             data['disable_edit_message'] = disable_edit_message
         if edit_message is not None:
-            warnings.warn('edit_message is deprecated, use disable_edit_message instead')
+            warnings.warn(
+                'edit_message is deprecated, use disable_edit_message instead')
             if disable_edit_message is None:
                 data['edit_message'] = edit_message
             else:
-                warnings.warn('edit_message is ignored when disable_edit_message is used')
+                warnings.warn(
+                    'edit_message is ignored when disable_edit_message is used')
 
         data['method'] = "setGameScore"
         self._sendmessages.append(data)
@@ -645,7 +665,11 @@ class Mockbot(TelegramObject):
         return Mockbot(**data)
 
     def to_dict(self):
-        data = {'id': self.id, 'username': self.username, 'first_name': self.username}
+        data = {
+            'id': self.id,
+            'username': self.username,
+            'first_name': self.username
+        }
 
         if self.last_name:
             data['last_name'] = self.last_name

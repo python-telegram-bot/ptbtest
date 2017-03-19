@@ -1,0 +1,20 @@
+-   repo: git://github.com/python-telegram-bot/mirrors-yapf
+    sha: v0.12.2
+    hooks:
+    -   id: yapf
+        files: ^(ptbtest|tests)/.*\.py$
+-   repo: git://github.com/pre-commit/pre-commit-hooks
+    sha: 18d7035de5388cc7775be57f529c154bf541aab9
+    hooks:
+    -   id: flake8
+        files: ^ptbtest/.*\.py$
+        args:
+        - --max-line-length=120
+-   repo: git://github.com/pre-commit/mirrors-pylint
+    sha: v1.5.5
+    hooks:
+    -   id: pylint
+        files: ^ptbtest/.*\.py$
+        args:
+        - --errors-only
+        - --disable=no-name-in-module,import-error
