@@ -26,8 +26,9 @@ from .messagegenerator import MessageGenerator
 from .updategenerator import UpdateGenerator
 from .errors import BadUserException
 from .errors import BadChatException
+from .errors import BadMessageException
 
 __all__ = [
-    "BadUserException", "BadChatException", "Mockbot", "UserGenerator",
-    "ChatGenerator", "MessageGenerator", "UpdateGenerator"
+    "BadUserException", "BadChatException", "BadMessageException", "Mockbot",
+    "UserGenerator", "ChatGenerator", "MessageGenerator", "UpdateGenerator"
 ]
