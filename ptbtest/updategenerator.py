@@ -18,52 +18,25 @@
 #
 # You should have received a copy of the GNU Lesser Public License
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
-"""This module provides a class to generate telegram updates"""
-from telegram import User
-from .ptbgenerator import PtbGenerator
-import random
+"""This module provides a decorator to generate telegram updates"""
+from telegram import Update
+import functools
 
 
-class UpdateGenerator(PtbGenerator):
-    """User generator class. placeholder for random names and mainly used
-        via it's get_user() method"""
-    FIRST_NAMES = [
-        "James", "Mary", "John", "Patricia", "Robert", "Jennifer", "Michael",
-        "Elizabeth", "William", "Linda", "David", "Barbara", "Richard",
-        "Susan", "Joseph", "Jessica", "Thomas", "Margaret", "Charles", "Sarah"
-    ]
-    LAST_NAMES = [
-        "Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller",
-        "Wilson", "Moore", "Taylor"
-    ]
+def _gen_id():
+    x = 1
+    while True:
+        yield x
+        x += 1
 
-    def __init__(self):
-        PtbGenerator.__init__(self)
 
-    def get_user(self, first_name=None, last_name=None, username=None,
-                 id=None):
-        """
-        Returns a telegram.User object with the optionally given name(s) or username
-        If any of the arguments are omitted the names will be chosen randomly and the
-        username will be generated as first_name + last_name.
+def update(func):
+    """
+    Decorator used by the generatorclasses to wrap the
+    """
+    functools.wraps(func)
 
-        Args:
-            first_name (Optional[str]): First name for the returned user.
-            last_name (Optional[str]): Lst name for the returned user.
-            username (Optional[str]): Username for the returned user.
+    def decorated_func(self, *args, **kwargs):
+        return Update(next(_gen_id()), func(self, *args, **kwargs))
 
-        Returns:
-            telegram.User: A telegram user object
-
-        """
-        if not first_name:
-            first_name = random.choice(self.FIRST_NAMES)
-        if not last_name:
-            last_name = random.choice(self.LAST_NAMES)
-        if not username:
-            username = first_name + last_name
-        return User(
-            id or self.gen_id(),
-            first_name,
-            last_name=last_name,
-            username=username)
+    return decorated_func
