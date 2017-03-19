@@ -20,7 +20,7 @@
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
 """This module provides a class to generate telegram users"""
 from telegram import User
-from ptbgenerator import PtbGenerator
+from .ptbgenerator import PtbGenerator
 import random
 
 
