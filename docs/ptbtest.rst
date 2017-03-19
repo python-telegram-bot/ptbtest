@@ -13,6 +13,7 @@ Submodules
    ptbtest.usergenerator
    ptbtest.errors
    ptbtest.updategenerator
+   ptbtest.entityparser
 
 
 Module contents

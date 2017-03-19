@@ -103,12 +103,12 @@ class TestMessageGeneratorText(unittest.TestCase):
 
     def test_text_with_markdown(self):
         teststr = "we have *bold* `code` [google](www.google.com) @username #hashtag _italics_ ```pre block``` " \
-                  "ftp://snt.utwente.nl "
+                  "ftp://snt.utwente.nl /start"
         u = self.mg.get_message(text=teststr)
         self.assertEqual(u.message.text, teststr)
 
         u = self.mg.get_message(text=teststr, parse_mode="Markdown")
-        self.assertEqual(len(u.message.entities), 8)
+        self.assertEqual(len(u.message.entities), 9)
         for ent in u.message.entities:
             if ent.type == "bold":
                 self.assertEqual(ent.offset, 8)
@@ -135,6 +135,9 @@ class TestMessageGeneratorText(unittest.TestCase):
             elif ent.type == "url":
                 self.assertEqual(ent.offset, 62)
                 self.assertEqual(ent.length, 20)
+            elif ent.type == "bot_command":
+                self.assertEqual(ent.offset, 83)
+                self.assertEqual(ent.length, 6)
 
         with self.assertRaises(BadMarkupError):
             self.mg.get_message(
@@ -142,12 +145,12 @@ class TestMessageGeneratorText(unittest.TestCase):
 
     def test_with_html(self):
         teststr = "we have <b>bold</b> <code>code</code> <a href='www.google.com'>google</a> @username #hashtag " \
-                  "<i>italics</i> <pre>pre block</pre> ftp://snt.utwente.nl "
+                  "<i>italics</i> <pre>pre block</pre> ftp://snt.utwente.nl /start"
         u = self.mg.get_message(text=teststr)
         self.assertEqual(u.message.text, teststr)
 
         u = self.mg.get_message(text=teststr, parse_mode="HTML")
-        self.assertEqual(len(u.message.entities), 8)
+        self.assertEqual(len(u.message.entities), 9)
         for ent in u.message.entities:
             if ent.type == "bold":
                 self.assertEqual(ent.offset, 8)
@@ -174,6 +177,9 @@ class TestMessageGeneratorText(unittest.TestCase):
             elif ent.type == "url":
                 self.assertEqual(ent.offset, 62)
                 self.assertEqual(ent.length, 20)
+            elif ent.type == "bot_command":
+                self.assertEqual(ent.offset, 83)
+                self.assertEqual(ent.length, 6)
 
         with self.assertRaises(BadMarkupError):
             self.mg.get_message(
