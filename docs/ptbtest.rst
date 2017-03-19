@@ -11,6 +11,9 @@ Submodules
    ptbtest.mockbot
    ptbtest.ptbgenerator
    ptbtest.usergenerator
+   ptbtest.errors
+   ptbtest.updategenerator
+
 
 Module contents
 ---------------

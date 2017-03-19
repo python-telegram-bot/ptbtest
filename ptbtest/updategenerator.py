@@ -18,13 +18,13 @@
 #
 # You should have received a copy of the GNU Lesser Public License
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
-"""This module provides a class to generate telegram users"""
+"""This module provides a class to generate telegram updates"""
 from telegram import User
 from ptbgenerator import PtbGenerator
 import random
 
 
-class UserGenerator(PtbGenerator):
+class UpdateGenerator(PtbGenerator):
     """User generator class. placeholder for random names and mainly used
         via it's get_user() method"""
     FIRST_NAMES = ["James", "Mary", "John", "Patricia", "Robert", "Jennifer", "Michael", "Elizabeth", "William",

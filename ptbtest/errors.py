@@ -18,13 +18,14 @@
 #
 # You should have received a copy of the GNU Lesser Public License
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
+"""This module provides exceptions to raise in tests"""
 
-from .mockbot import Mockbot
-from .usergenerator import UserGenerator
-from .chatgenerator import ChatGenerator
-from .messagegenerator import MessageGenerator
-from .updategenerator import UpdateGenerator
-from .errors import BadUserException
-from .errors import BadChatException
 
-__all__ = ["BadUserException", "BadChatException","Mockbot", "UserGenerator", "ChatGenerator", "MessageGenerator", "UpdateGenerator"]
+class BadUserException(Exception):
+    def __init__(self):
+        super(BadUserException, self).__init__('Invalid telegram.User object')
+
+
+class BadChatException(Exception):
+    def __init__(self):
+        super(BadChatException, self).__init__('Invalid telegram.Chat object')
