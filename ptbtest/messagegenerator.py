@@ -152,7 +152,7 @@ class MessageGenerator(PtbGenerator):
         """
         user, chat = self._get_user_and_chat(user, chat, private)
         return Message(
-            self.idgen.next(),
+            next(self.idgen),
             user,
             None,
             chat,
