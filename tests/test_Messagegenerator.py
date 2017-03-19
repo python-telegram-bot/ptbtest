@@ -6,6 +6,7 @@ from ptbtest import BadUserException
 from ptbtest import ChatGenerator
 from ptbtest import MessageGenerator
 from ptbtest import UserGenerator
+from ptbtest import BadMessageException
 
 
 class TestMessageGeneratorText(unittest.TestCase):
@@ -87,6 +88,33 @@ class TestMessageGeneratorReplies(unittest.TestCase):
         m2 = self.mg.get_message(
             text="This is the second", reply_to_message=m1)
         self.assertEqual(m1.text, m2.reply_to_message.text)
+
+        with self.assertRaises(BadMessageException):
+            m = "This is not a Messages"
+            self.mg.get_message(reply_to_message=m)
+
+
+class TestMessageGeneratorForwards(unittest.TestCase):
+    def setUp(self):
+        self.mg = MessageGenerator()
+
+    def test_forwarded_message(self):
+        ug = UserGenerator()
+        u1 = ug.get_user()
+        u2 = ug.get_user()
+        cg = ChatGenerator()
+        c = cg.get_chat(type="group")
+        m = self.mg.get_message(
+            user=u1, chat=c, forward_from=u2, text="This is a test")
+        self.assertEqual(m.from_user.id, u1.id)
+        self.assertEqual(m.forward_from.id, u2.id)
+        self.assertNotEqual(m.from_user.id, m.forward_from.id)
+        self.assertEqual(m.text, "This is a test")
+
+        with self.assertRaises(BadUserException):
+            u3 = "This is not a User"
+            m = self.mg.get_message(
+                user=u1, chat=c, forward_from=u3, text="This is a test")
 
 
 if __name__ == '__main__':

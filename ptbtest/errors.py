@@ -29,3 +29,9 @@ class BadUserException(Exception):
 class BadChatException(Exception):
     def __init__(self):
         super(BadChatException, self).__init__('Invalid telegram.Chat object')
+
+
+class BadMessageException(Exception):
+    def __init__(self):
+        super(BadMessageException,
+              self).__init__('Invalid telegram.Message object')

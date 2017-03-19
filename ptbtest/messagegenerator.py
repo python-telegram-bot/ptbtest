@@ -23,7 +23,7 @@
 from .ptbgenerator import PtbGenerator
 from telegram import Message, Chat, User
 from ptbtest import UserGenerator, ChatGenerator
-from ptbtest.errors import BadUserException
+from ptbtest.errors import BadUserException, BadMessageException
 from ptbtest.errors import BadChatException
 
 
@@ -116,6 +116,10 @@ class MessageGenerator(PtbGenerator):
         for modifiers see args.
 
         Args:
+            text (str): The text for the message
+            private (Optional[bool]): If the message is private (optionally with the supplied user) default=True
+            chat (Optional[telegram.Chat]): Chat the message is from (m.chat).
+            user (Optional[telegram.User]): User the message is from (m.from_user)
             forward_from_message_id (Optional[int]):
             pinned_message (Optional[telegram.Message]):
             channel_chat_created (Optional[True]):
@@ -142,15 +146,18 @@ class MessageGenerator(PtbGenerator):
             reply_to_message (Optional[telegram.Message):
             forward_from_chat (Optional[telegram.Chat]):
             forward_from (Optional[telegram.User):
-            text (str): The text for the message
-            private (Optional[bool]): If the message is private (optionally with the supplied user) default=True
-            chat (Optional[telegram.Chat]): Chat the message is from (m.chat).
-            user (Optional[telegram.User]): User the message is from (m.from_user)
+
 
         Returns:
             telegram.Message: A telegram Message object.
         """
         user, chat = self._get_user_and_chat(user, chat, private)
+        if reply_to_message and not isinstance(reply_to_message, Message):
+            raise BadMessageException
+
+        if forward_from and not isinstance(forward_from, User):
+            raise BadUserException
+
         return Message(
             next(self.idgen),
             user,
