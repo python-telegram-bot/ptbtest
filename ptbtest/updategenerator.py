@@ -37,8 +37,8 @@ def update(func):
     """
     Decorator used by the generatorclasses to wrap the
     """
-    functools.wraps(func)
 
+    @functools.wraps(func)
     def decorated_func(self, *args, **kwargs):
         return Update(next(idgen), func(self, *args, **kwargs))
 
