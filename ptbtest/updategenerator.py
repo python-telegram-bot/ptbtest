@@ -30,13 +30,16 @@ def _gen_id():
         x += 1
 
 
+idgen = _gen_id()
+
+
 def update(func):
     """
     Decorator used by the generatorclasses to wrap the
     """
-    functools.wraps(func)
 
+    @functools.wraps(func)
     def decorated_func(self, *args, **kwargs):
-        return Update(next(_gen_id()), func(self, *args, **kwargs))
+        return Update(next(idgen), func(self, *args, **kwargs))
 
     return decorated_func

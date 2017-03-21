@@ -27,10 +27,10 @@ from .errors import BadUserException
 from .errors import BadChatException
 from .errors import BadMessageException
 from .errors import BadBotException
-from .errors import BadMarkupError
+from .errors import BadMarkupException
 
 __all__ = [
     "BadUserException", "BadChatException", "BadMessageException",
     "BadBotException", "Mockbot", "UserGenerator", "ChatGenerator",
-    "MessageGenerator", "BadMarkupError"
+    "MessageGenerator", "BadMarkupException"
 ]

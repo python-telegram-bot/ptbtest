@@ -1,16 +1,13 @@
 from __future__ import absolute_import
+
 import unittest
 
-from ptbtest import BadChatException
-from ptbtest import BadUserException
-from ptbtest import ChatGenerator
-from ptbtest import MessageGenerator
-from ptbtest import UserGenerator
-from ptbtest import BadMessageException
-from ptbtest import BadBotException
-from ptbtest import BadMarkupError
-from telegram import User, Update
+from ptbtest import (BadBotException, BadChatException, BadUserException,
+                     BadMarkupException, BadMessageException)
 from ptbtest import Mockbot
+from ptbtest import (UserGenerator, MessageGenerator, ChatGenerator)
+from telegram import (Audio, Contact, Document, Location, Sticker, User,
+                      Update, Venue, Video, Voice, PhotoSize)
 
 
 class TestMessageGeneratorCore(unittest.TestCase):
@@ -103,12 +100,12 @@ class TestMessageGeneratorText(unittest.TestCase):
 
     def test_text_with_markdown(self):
         teststr = "we have *bold* `code` [google](www.google.com) @username #hashtag _italics_ ```pre block``` " \
-                  "ftp://snt.utwente.nl "
+                  "ftp://snt.utwente.nl /start"
         u = self.mg.get_message(text=teststr)
         self.assertEqual(u.message.text, teststr)
 
         u = self.mg.get_message(text=teststr, parse_mode="Markdown")
-        self.assertEqual(len(u.message.entities), 8)
+        self.assertEqual(len(u.message.entities), 9)
         for ent in u.message.entities:
             if ent.type == "bold":
                 self.assertEqual(ent.offset, 8)
@@ -117,10 +114,10 @@ class TestMessageGeneratorText(unittest.TestCase):
                 self.assertEqual(ent.offset, 13)
                 self.assertEqual(ent.length, 4)
             elif ent.type == "italic":
-                self.assertEqual(ent.offset, 43)
+                self.assertEqual(ent.offset, 44)
                 self.assertEqual(ent.length, 7)
             elif ent.type == "pre":
-                self.assertEqual(ent.offset, 51)
+                self.assertEqual(ent.offset, 52)
                 self.assertEqual(ent.length, 9)
             elif ent.type == "text_link":
                 self.assertEqual(ent.offset, 18)
@@ -135,19 +132,22 @@ class TestMessageGeneratorText(unittest.TestCase):
             elif ent.type == "url":
                 self.assertEqual(ent.offset, 62)
                 self.assertEqual(ent.length, 20)
+            elif ent.type == "bot_command":
+                self.assertEqual(ent.offset, 83)
+                self.assertEqual(ent.length, 6)
 
-        with self.assertRaises(BadMarkupError):
+        with self.assertRaises(BadMarkupException):
             self.mg.get_message(
                 text="bad *_double_* markdown", parse_mode="Markdown")
 
     def test_with_html(self):
         teststr = "we have <b>bold</b> <code>code</code> <a href='www.google.com'>google</a> @username #hashtag " \
-                  "<i>italics</i> <pre>pre block</pre> ftp://snt.utwente.nl "
+                  "<i>italics</i> <pre>pre block</pre> ftp://snt.utwente.nl /start"
         u = self.mg.get_message(text=teststr)
         self.assertEqual(u.message.text, teststr)
 
         u = self.mg.get_message(text=teststr, parse_mode="HTML")
-        self.assertEqual(len(u.message.entities), 8)
+        self.assertEqual(len(u.message.entities), 9)
         for ent in u.message.entities:
             if ent.type == "bold":
                 self.assertEqual(ent.offset, 8)
@@ -156,10 +156,10 @@ class TestMessageGeneratorText(unittest.TestCase):
                 self.assertEqual(ent.offset, 13)
                 self.assertEqual(ent.length, 4)
             elif ent.type == "italic":
-                self.assertEqual(ent.offset, 43)
+                self.assertEqual(ent.offset, 44)
                 self.assertEqual(ent.length, 7)
             elif ent.type == "pre":
-                self.assertEqual(ent.offset, 51)
+                self.assertEqual(ent.offset, 52)
                 self.assertEqual(ent.length, 9)
             elif ent.type == "text_link":
                 self.assertEqual(ent.offset, 18)
@@ -174,8 +174,11 @@ class TestMessageGeneratorText(unittest.TestCase):
             elif ent.type == "url":
                 self.assertEqual(ent.offset, 62)
                 self.assertEqual(ent.length, 20)
+            elif ent.type == "bot_command":
+                self.assertEqual(ent.offset, 83)
+                self.assertEqual(ent.length, 6)
 
-        with self.assertRaises(BadMarkupError):
+        with self.assertRaises(BadMarkupException):
             self.mg.get_message(
                 text="bad <b><i>double</i></b> markup", parse_mode="HTML")
 
@@ -243,6 +246,214 @@ class TestMessageGeneratorForwards(unittest.TestCase):
         with self.assertRaises(BadChatException):
             c = self.cg.get_chat("group")
             u = self.mg.get_message(text="This is a test", forward_from_chat=c)
+
+
+class TestMessageGeneratorStatusMessages(unittest.TestCase):
+    def setUp(self):
+        self.mg = MessageGenerator()
+        self.ug = UserGenerator()
+        self.cg = ChatGenerator()
+
+    def test_new_chat_member(self):
+        user = self.ug.get_user()
+        chat = self.cg.get_chat(type="group")
+        u = self.mg.get_message(chat=chat, new_chat_member=user)
+        self.assertEqual(u.message.new_chat_member.id, user.id)
+
+        with self.assertRaises(BadChatException):
+            self.mg.get_message(new_chat_member=user)
+
+    def test_left_chat_member(self):
+        user = self.ug.get_user()
+        chat = self.cg.get_chat(type='group')
+        u = self.mg.get_message(chat=chat, left_chat_member=user)
+        self.assertEqual(u.message.left_chat_member.id, user.id)
+
+        with self.assertRaises(BadChatException):
+            self.mg.get_message(left_chat_member=user)
+
+    def test_new_chat_title(self):
+        chat = self.cg.get_chat(type="group")
+        u = self.mg.get_message(chat=chat, new_chat_title="New title")
+        self.assertEqual(u.message.chat.title, "New title")
+        self.assertEqual(u.message.chat.title, chat.title)
+
+        with self.assertRaises(BadChatException):
+            self.mg.get_message(new_chat_title="New title")
+
+    def test_new_chat_photo(self):
+        chat = self.cg.get_chat("group")
+        u = self.mg.get_message(chat=chat, new_chat_photo=True)
+        self.assertIsInstance(u.message.new_chat_photo, list)
+        self.assertIsInstance(u.message.new_chat_photo[0], PhotoSize)
+        photo = [PhotoSize("2", 1, 1, file_size=3)]
+        u = self.mg.get_message(chat=chat, new_chat_photo=photo)
+        self.assertEqual(len(u.message.new_chat_photo), 1)
+
+        with self.assertRaises(BadChatException):
+            self.mg.get_message(new_chat_photo=True)
+
+        photo = "foto's!"
+        with self.assertRaises(BadMessageException):
+            self.mg.get_message(chat=chat, new_chat_photo=photo)
+
+    def test_pinned_message(self):
+        chat = self.cg.get_chat(type="supergroup")
+        message = self.mg.get_message(
+            chat=chat, text="this will be pinned").message
+        u = self.mg.get_message(chat=chat, pinned_message=message)
+        self.assertEqual(u.message.pinned_message.text, "this will be pinned")
+
+        with self.assertRaises(BadChatException):
+            self.mg.get_message(pinned_message=message)
+
+    def test_multiple_statusmessages(self):
+        with self.assertRaises(BadMessageException):
+            self.mg.get_message(
+                private=False,
+                new_chat_member=self.ug.get_user(),
+                new_chat_title="New title")
+
+
+class TestMessageGeneratorAttachments(unittest.TestCase):
+    def setUp(self):
+        self.mg = MessageGenerator()
+
+    def test_caption_solo(self):
+        with self.assertRaisesRegexp(BadMessageException, r"caption without"):
+            self.mg.get_message(caption="my cap")
+
+    def test_more_than_one(self):
+        with self.assertRaisesRegexp(BadMessageException, "more than one"):
+            self.mg.get_message(photo=True, video=True)
+
+    def test_location(self):
+        loc = Location(50.012, -32.11)
+        u = self.mg.get_message(location=loc)
+        self.assertEqual(loc.longitude, u.message.location.longitude)
+
+        u = self.mg.get_message(location=True)
+        self.assertIsInstance(u.message.location, Location)
+
+        with self.assertRaisesRegexp(BadMessageException,
+                                     r"telegram\.Location"):
+            self.mg.get_message(location="location")
+
+    def test_venue(self):
+        ven = Venue(Location(1.0, 1.0), "some place", "somewhere")
+        u = self.mg.get_message(venue=ven)
+        self.assertEqual(u.message.venue.title, ven.title)
+
+        u = self.mg.get_message(venue=True)
+        self.assertIsInstance(u.message.venue, Venue)
+
+        with self.assertRaisesRegexp(BadMessageException, r"telegram\.Venue"):
+            self.mg.get_message(venue="Venue")
+
+    def test_contact(self):
+        con = Contact("0612345", "testman")
+        u = self.mg.get_message(contact=con)
+        self.assertEqual(con.phone_number, u.message.contact.phone_number)
+
+        u = self.mg.get_message(contact=True)
+        self.assertIsInstance(u.message.contact, Contact)
+
+        with self.assertRaisesRegexp(BadMessageException,
+                                     r"telegram\.Contact"):
+            self.mg.get_message(contact="contact")
+
+    def test_voice(self):
+        voice = Voice("idyouknow", 12)
+        u = self.mg.get_message(voice=voice)
+        self.assertEqual(voice.file_id, u.message.voice.file_id)
+
+        cap = "voice file"
+        u = self.mg.get_message(voice=voice, caption=cap)
+        self.assertEqual(u.message.caption, cap)
+
+        u = self.mg.get_message(voice=True)
+        self.assertIsInstance(u.message.voice, Voice)
+
+        with self.assertRaisesRegexp(BadMessageException, r"telegram\.Voice"):
+            self.mg.get_message(voice="voice")
+
+    def test_video(self):
+        video = Video("idyouknow", 200, 200, 10)
+        u = self.mg.get_message(video=video)
+        self.assertEqual(video.file_id, u.message.video.file_id)
+
+        cap = "video file"
+        u = self.mg.get_message(video=video, caption=cap)
+        self.assertEqual(u.message.caption, cap)
+
+        u = self.mg.get_message(video=True)
+        self.assertIsInstance(u.message.video, Video)
+
+        with self.assertRaisesRegexp(BadMessageException, r"telegram\.Video"):
+            self.mg.get_message(video="video")
+
+    def test_sticker(self):
+        sticker = Sticker("idyouknow", 30, 30)
+        u = self.mg.get_message(sticker=sticker)
+        self.assertEqual(sticker.file_id, u.message.sticker.file_id)
+
+        cap = "sticker file"
+        u = self.mg.get_message(sticker=sticker, caption=cap)
+        self.assertEqual(u.message.caption, cap)
+
+        u = self.mg.get_message(sticker=True)
+        self.assertIsInstance(u.message.sticker, Sticker)
+
+        with self.assertRaisesRegexp(BadMessageException,
+                                     r"telegram\.Sticker"):
+            self.mg.get_message(sticker="sticker")
+
+    def test_document(self):
+        document = Document("idyouknow", file_name="test.pdf")
+        u = self.mg.get_message(document=document)
+        self.assertEqual(document.file_id, u.message.document.file_id)
+
+        cap = "document file"
+        u = self.mg.get_message(document=document, caption=cap)
+        self.assertEqual(u.message.caption, cap)
+
+        u = self.mg.get_message(document=True)
+        self.assertIsInstance(u.message.document, Document)
+
+        with self.assertRaisesRegexp(BadMessageException,
+                                     r"telegram\.Document"):
+            self.mg.get_message(document="document")
+
+    def test_audio(self):
+        audio = Audio("idyouknow", 23)
+        u = self.mg.get_message(audio=audio)
+        self.assertEqual(audio.file_id, u.message.audio.file_id)
+
+        cap = "audio file"
+        u = self.mg.get_message(audio=audio, caption=cap)
+        self.assertEqual(u.message.caption, cap)
+
+        u = self.mg.get_message(audio=True)
+        self.assertIsInstance(u.message.audio, Audio)
+
+        with self.assertRaisesRegexp(BadMessageException, r"telegram\.Audio"):
+            self.mg.get_message(audio="audio")
+
+    def test_photo(self):
+        photo = [PhotoSize("2", 1, 1, file_size=3)]
+        u = self.mg.get_message(photo=photo)
+        self.assertEqual(photo[0].file_size, u.message.photo[0].file_size)
+
+        cap = "photo file"
+        u = self.mg.get_message(photo=photo, caption=cap)
+        self.assertEqual(u.message.caption, cap)
+
+        u = self.mg.get_message(photo=True)
+        self.assertIsInstance(u.message.photo, list)
+        self.assertIsInstance(u.message.photo[0], PhotoSize)
+
+        with self.assertRaisesRegexp(BadMessageException, r"telegram\.Photo"):
+            self.mg.get_message(photo="photo")
 
 
 if __name__ == '__main__':

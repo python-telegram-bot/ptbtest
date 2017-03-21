@@ -19,13 +19,21 @@
 # You should have received a copy of the GNU Lesser Public License
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
 """This module provides a class to generate telegram mesages"""
-
+from telegram import Audio
+from telegram import Contact
+from telegram import Document
+from telegram import Location
+from telegram import PhotoSize
+from telegram import Sticker
+from telegram import Venue
+from telegram import Video
+from telegram import Voice
 from .ptbgenerator import PtbGenerator
 from telegram import Message, Chat, User
 from ptbtest import UserGenerator, ChatGenerator
 from ptbtest.errors import BadUserException, BadMessageException
 from ptbtest.errors import BadChatException, BadBotException
-from ptbtest.errors import BadMarkupError
+from ptbtest.errors import BadMarkupException
 from ptbtest.updategenerator import update
 import datetime
 import time
@@ -41,7 +49,7 @@ class MessageGenerator(PtbGenerator):
             bot (ptbtest.Mockbot): Bot to encode with the messages
 
         Args:
-            bot (Optional[ptbtest.Mockbot])
+            bot (Optional[ptbtest.Mockbot]): supply your own for a custom botname
     """
 
     def __init__(self, bot=None):
@@ -100,7 +108,11 @@ class MessageGenerator(PtbGenerator):
         When called without arguments will return an update object for a message from a private chat with a
         random user. for modifiers see args.
 
-        Args/Attributes:
+        Notes:
+            whenever a list of telegram.PhotoSize objects is expected but not supplied it will always be a
+            list with two random sizes between 40-400 pixels. These will not be valid file id's
+
+        Parameters:
             user (Optional[telegram.User]): User the message is from (m.from_user)
             chat (Optional[telegram.Chat]): Chat the message is from (m.chat).
             private (Optional[bool]): If the message is private (optionally with the supplied user) default=True
@@ -113,29 +125,27 @@ class MessageGenerator(PtbGenerator):
             forward_from_chat (Optional[telegram.Chat]): channel this message is forwarded from
             forward_date (Optional[int]): Original sent date
             forward_from_message_id (Optional[int]): message id from forwarded channel post.
-            pinned_message (Optional[telegram.Message]):
-            channel_chat_created (Optional[True]):
-            migrate_from_chat_id (Optional[int]):
-            migrate_to_chat_id (Optional[int]):
-            supergroup_chat_created (Optional[True]):
-            group_chat_created (Optional[True]):
-            delete_chat_photo (Optional[True]):
-            new_chat_photo (Optional[lst(telegram.Photosize)]):
-            new_chat_title (Optional[str]):
-            left_chat_member (Optional[telegram.User]):
-            new_chat_member (Optional[telegram.User]):
-            venue (Optional[telegram.Venue]):
-            location (optional[telegram.Location]):
-            contact (optional[telegram.Contact]):
-            caption (Optional[str]):
-            voice (Optional[telegram.Voice]):
-            video (Optional[telegram.Video]):
-            sticker (Optional[telegram.Sticker]):
-            photo (Optional[lst(telegram.PhotoSize)]):
-            document (Optional[telegram.Document]):
-            audio (Optional[telegram.Audio]):
-
-
+            new_chat_member (Optional[telegram.User]): New member for this chat
+            left_chat_member (Optional[telegram.User]): Member left this chat
+            new_chat_title (Optional[str]): New title for the chat
+            new_chat_photo (Optional[lst(telegram.Photosize)] or True): New picture for the group
+            pinned_message (Optional[telegram.Message]): Pinned message for supergroups
+            channel_chat_created (Optional[True]): Not integrated
+            migrate_from_chat_id (Optional[int]): Not integrated
+            migrate_to_chat_id (Optional[int]): Not integrated
+            supergroup_chat_created (Optional[True]): Not integrated
+            group_chat_created (Optional[True]): Not integrated
+            delete_chat_photo (Optional[True]): Not integrated
+            venue (Optional[telegram.Venue or True]): Either the right object or True to generate one
+            location (optional[telegram.Location or True]): Either the right object or True to generate one
+            contact (optional[telegram.Contact or True]): Either the right object or True to generate one
+            caption (Optional[str or True]: Either the right object or True to generate one
+            voice (Optional[telegram.Voice or True]): Either the right object or True to generate one
+            video (Optional[telegram.Video or True]): Either the right object or True to generate one
+            sticker (Optional[telegram.Sticker] or True): Either the right object or True to generate one
+            photo (Optional[lst(telegram.PhotoSize) or True]): Either the right object or True to generate one
+            document (Optional[telegram.Document or True]): Either the right object or True to generate one
+            audio (Optional[telegram.Audio] or True): Either the right object or True to generate one
 
         Returns:
             telegram.Update: A telegram update object containing a message.
@@ -149,7 +159,17 @@ class MessageGenerator(PtbGenerator):
             forward_date, forward_from, forward_from_chat,
             forward_from_message_id)
 
-        text, entities = self._handle_text(text, entities, parse_mode)
+        text, entities = self._handle_text(text, parse_mode)
+
+        new_chat_photo = self._handle_status(
+            channel_chat_created, chat, delete_chat_photo, group_chat_created,
+            left_chat_member, migrate_from_chat_id, migrate_to_chat_id,
+            new_chat_member, new_chat_photo, new_chat_title, pinned_message,
+            supergroup_chat_created)
+
+        audio, contact, document, location, photo, sticker, venue, video, voice = self._handle_attachments(
+            audio, contact, document, location, photo, sticker, user, venue,
+            video, voice, caption)
 
         return Message(
             next(self.idgen),
@@ -186,6 +206,182 @@ class MessageGenerator(PtbGenerator):
             forward_date=forward_date,
             bot=self.bot)
 
+    def _handle_attachments(self, audio, contact, document, location, photo,
+                            sticker, user, venue, video, voice, caption):
+        attachments = [
+            x
+            for x in [
+                photo, venue, location, contact, voice, video, sticker,
+                document, audio
+            ] if x
+        ]
+        if caption and not attachments:
+            raise BadMessageException(
+                "Can't have a caption without attachment")
+        if len(attachments) > 1:
+            raise BadMessageException("can't add more than one attachment")
+        if photo:
+            if isinstance(photo, list):
+                if all([isinstance(x, PhotoSize) for x in photo]):
+                    pass
+                else:
+                    raise BadMessageException(
+                        "photo must either be True or list(telegram.PhotoSize)")
+            elif isinstance(photo, bool) and photo:
+                photo = self._get_photosize()
+            else:
+                raise BadMessageException(
+                    "photo must either be True or list(telegram.PhotoSize)")
+        if location:
+            if isinstance(location, Location):
+                pass
+            elif isinstance(location, bool):
+                location = self._get_location()
+            else:
+                raise BadMessageException(
+                    "location must either be True or telegram.Location")
+        if venue:
+            if isinstance(venue, Venue):
+                pass
+            elif isinstance(venue, bool):
+                venue = self._get_venue()
+            else:
+                raise BadMessageException(
+                    "venue must either be True or telegram.Venue")
+        if contact:
+            if isinstance(contact, Contact):
+                pass
+            elif isinstance(contact, bool):
+                contact = self._get_contact(user)
+            else:
+                raise BadMessageException(
+                    "contact must either be True or telegram.Contact")
+        if voice:
+            if isinstance(voice, Voice):
+                pass
+            elif isinstance(voice, bool):
+                voice = self._get_voice()
+            else:
+                raise BadMessageException(
+                    "voice must either be True or telegram.Voice")
+        if video:
+            if isinstance(video, Video):
+                pass
+            elif isinstance(video, bool):
+                video = self._get_video()
+            else:
+                raise BadMessageException(
+                    "video must either be True or telegram.Video")
+        if sticker:
+            if isinstance(sticker, Sticker):
+                pass
+            elif isinstance(sticker, bool):
+                sticker = self._get_sticker()
+            else:
+                raise BadMessageException(
+                    "sticker must either be True or telegram.Sticker")
+        if document:
+            if isinstance(document, Document):
+                pass
+            elif isinstance(document, bool):
+                document = self._get_document()
+            else:
+                raise BadMessageException(
+                    "document must either be True or telegram.Document")
+        if audio:
+            if isinstance(audio, Audio):
+                pass
+            elif isinstance(audio, bool):
+                audio = self._get_audio()
+            else:
+                raise BadMessageException(
+                    "audio must either be True or telegram.Audio")
+        return audio, contact, document, location, photo, sticker, venue, video, voice
+
+    def _handle_forward(self, forward_date, forward_from, forward_from_chat,
+                        forward_from_message_id):
+        if forward_from and not isinstance(forward_from, User):
+            raise BadUserException
+        if forward_from_chat:
+            if not isinstance(forward_from_chat, Chat):
+                raise BadChatException
+            if forward_from_chat.type != "channel":
+                raise BadChatException(
+                    'forward_from_chat must be of type "channel"')
+            if not forward_from:
+                forward_from = UserGenerator().get_user()
+        if forward_from and not isinstance(forward_date, int):
+            if not isinstance(forward_date, datetime.datetime):
+                now = datetime.datetime.now()
+            else:
+                now = forward_date
+            try:
+                # Python 3.3+
+                forward_date = int(now.timestamp())
+            except AttributeError:
+                # Python 3 (< 3.3) and Python 2
+                forward_date = int(time.mktime(now.timetuple()))
+        if (forward_from_message_id and
+                not isinstance(forward_from_message_id, int)) or (
+                    forward_from_chat and not forward_from_message_id):
+            forward_from_message_id = next(self.idgen)
+        return forward_date, forward_from, forward_from_message_id
+
+    def _handle_status(self, channel_chat_created, chat, delete_chat_photo,
+                       group_chat_created, left_chat_member,
+                       migrate_from_chat_id, migrate_to_chat_id,
+                       new_chat_member, new_chat_photo, new_chat_title,
+                       pinned_message, supergroup_chat_created):
+        status_messages = [
+            new_chat_member, left_chat_member, new_chat_title, new_chat_photo,
+            delete_chat_photo, group_chat_created, supergroup_chat_created,
+            channel_chat_created, migrate_to_chat_id, migrate_from_chat_id,
+            pinned_message
+        ]
+        if len([x for x in status_messages if x]) > 1:
+            raise BadMessageException(
+                "Limit to only one status message per message")
+        if new_chat_member:
+            if not isinstance(new_chat_member, User):
+                raise BadUserException
+            if chat.type == "private":
+                raise BadChatException("Can not add members to private chat")
+        if left_chat_member:
+            if not isinstance(left_chat_member, User):
+                raise BadUserException
+            if chat.type == "private":
+                raise BadChatException("People can not leave a private chat")
+        if new_chat_title:
+            if chat.type == "private":
+                raise BadChatException("Can not change title of private chat")
+            chat.title = new_chat_title
+        if new_chat_photo:
+            if chat.type == "private":
+                raise BadChatException(
+                    "Can't change the photo for a private chat a private chat")
+            if isinstance(new_chat_photo, list):
+                if all([isinstance(x, PhotoSize) for x in new_chat_photo]):
+                    pass
+                else:
+                    raise BadMessageException(
+                        "new_cat_photo must either be True or list(telegram.PhotoSize)"
+                    )
+            elif isinstance(new_chat_photo, bool) and new_chat_photo:
+                new_chat_photo = self._get_photosize()
+            else:
+                raise BadMessageException(
+                    "new_cat_photo must either be True or list(telegram.PhotoSize)"
+                )
+        if pinned_message:
+            if not isinstance(pinned_message, Message):
+                raise BadMessageException
+            elif chat.type != "supergroup":
+                raise BadChatException(
+                    "Messages can only be pinned in supergroups")
+            else:
+                pinned_message.reply_to_message = None
+        return new_chat_photo
+
     def _get_user_and_chat(self, user, chat, private):
         if chat and user:
             if not isinstance(chat, Chat):
@@ -219,44 +415,63 @@ class MessageGenerator(PtbGenerator):
             chat = self.cg.get_chat(type="group")
         return user, chat
 
-    def _handle_forward(self, forward_date, forward_from, forward_from_chat,
-                        forward_from_message_id):
-        if forward_from and not isinstance(forward_from, User):
-            raise BadUserException
-        if forward_from_chat:
-            if not isinstance(forward_from_chat, Chat):
-                raise BadChatException
-            if forward_from_chat.type != "channel":
-                raise BadChatException(
-                    'forward_from_chat must be of type "channel"')
-            if not forward_from:
-                forward_from = UserGenerator().get_user()
-        if forward_from and not isinstance(forward_date, int):
-            if not isinstance(forward_date, datetime.datetime):
-                now = datetime.datetime.now()
-            else:
-                now = forward_date
-            try:
-                # Python 3.3+
-                forward_date = int(now.timestamp())
-            except AttributeError:
-                # Python 3 (< 3.3) and Python 2
-                forward_date = int(time.mktime(now.timetuple()))
-        if (forward_from_message_id and
-                not isinstance(forward_from_message_id, int)) or (
-                    forward_from_chat and not forward_from_message_id):
-            forward_from_message_id = next(self.idgen)
-        return forward_date, forward_from, forward_from_message_id
-
-    def _handle_text(self, text, entities, parse_mode):
-        if text and entities:
-            pass
-        elif text and parse_mode:
+    def _handle_text(self, text, parse_mode):
+        if text and parse_mode:
             if parse_mode not in ["HTML", "Markdown"]:
-                raise BadMarkupError('Mardown mode must be HTML or Markdown')
+                raise BadMarkupException(
+                    'Mardown mode must be HTML or Markdown')
             elif parse_mode == "HTML":
                 text, entities = EntityParser.parse_html(text)
             else:
                 text, entities = EntityParser.parse_markdown(text)
-
+        else:
+            entities = []
         return text, entities
+
+    def _get_photosize(self):
+        tmp = []
+        import uuid
+        from random import randint
+        for _ in range(2):
+            w, h = randint(40, 400), randint(40, 400)
+            s = w * h * 0.3
+            tmp.append(PhotoSize(uuid.uuid4(), w, h, file_size=s))
+        return tmp
+
+    def _get_location(self):
+        from random import uniform
+        return Location(uniform(-180.0, 180.0), uniform(-90.0, 90.0))
+
+    def _get_venue(self):
+        loc = self._get_location()
+        address = "somewherestreet 23"
+        name = "Awesome place"
+        return Venue(loc, name, address)
+
+    def _get_contact(self, user):
+        return Contact("06123456789", user.first_name)
+
+    def _get_voice(self):
+        import uuid
+        from random import randint
+        return Voice(uuid.uuid4(), randint(1, 120))
+
+    def _get_video(self):
+        import uuid
+        from random import randint
+        return Video(uuid.uuid4(),
+                     randint(40, 400), randint(40, 400), randint(2, 300))
+
+    def _get_sticker(self):
+        import uuid
+        from random import randint
+        return Sticker(uuid.uuid4(), randint(20, 200), randint(20, 200))
+
+    def _get_document(self):
+        import uuid
+        return Document(uuid.uuid4(), file_name="somedoc.pdf")
+
+    def _get_audio(self):
+        import uuid
+        from random import randint
+        return Audio(uuid.uuid4(), randint(1, 120), title="Some song")

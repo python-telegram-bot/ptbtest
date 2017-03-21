@@ -34,7 +34,7 @@ class Mockbot(TelegramObject):
     """
     The Mockbot is a fake telegram-bot that does not require a token or a connection to the telegram
     servers. It's used to mimmick all methods of python-telegram-bot instance, but never contact the telegram servers.
-    All methods as described :py:class:`telegram.Bot` telegram.Bot are functional and describer here are only
+    All methods as described in :py:class:`telegram.Bot` are functional and described here are only
     the special methods added for testing functionality
 
 
