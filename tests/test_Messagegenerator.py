@@ -84,10 +84,14 @@ class TestMessageGeneratorCore(unittest.TestCase):
         us = "not a telegram.User"
         with self.assertRaises(BadUserException):
             u = self.mg.get_message(user=us)
+        with self.assertRaises(BadUserException):
+            u = self.mg.get_message(chat=c, user="user")
 
         c = "Not a telegram.Chat"
         with self.assertRaises(BadChatException):
-            u = self.mg.get_message(chat=c)
+            self.mg.get_message(chat=c)
+        with self.assertRaises(BadChatException):
+            self.mg.get_message(user=u, chat="chat")
 
 
 class TestMessageGeneratorText(unittest.TestCase):
@@ -182,6 +186,10 @@ class TestMessageGeneratorText(unittest.TestCase):
             self.mg.get_message(
                 text="bad <b><i>double</i></b> markup", parse_mode="HTML")
 
+    def test_wrong_markup(self):
+        with self.assertRaises(BadMarkupException):
+            self.mg.get_message(text="text", parse_mode="htmarkdownl")
+
 
 class TestMessageGeneratorReplies(unittest.TestCase):
     def setUp(self):
@@ -215,6 +223,9 @@ class TestMessageGeneratorForwards(unittest.TestCase):
         self.assertNotEqual(u.message.from_user.id, u.message.forward_from.id)
         self.assertEqual(u.message.text, "This is a test")
         self.assertIsInstance(u.message.forward_date, int)
+        import datetime
+        self.mg.get_message(
+            forward_from=u2, forward_date=datetime.datetime.now())
 
         with self.assertRaises(BadUserException):
             u3 = "This is not a User"
@@ -262,6 +273,8 @@ class TestMessageGeneratorStatusMessages(unittest.TestCase):
 
         with self.assertRaises(BadChatException):
             self.mg.get_message(new_chat_member=user)
+        with self.assertRaises(BadUserException):
+            self.mg.get_message(chat=chat, new_chat_member="user")
 
     def test_left_chat_member(self):
         user = self.ug.get_user()
@@ -271,6 +284,8 @@ class TestMessageGeneratorStatusMessages(unittest.TestCase):
 
         with self.assertRaises(BadChatException):
             self.mg.get_message(left_chat_member=user)
+        with self.assertRaises(BadUserException):
+            self.mg.get_message(chat=chat, left_chat_member="user")
 
     def test_new_chat_title(self):
         chat = self.cg.get_chat(type="group")
@@ -296,6 +311,8 @@ class TestMessageGeneratorStatusMessages(unittest.TestCase):
         photo = "foto's!"
         with self.assertRaises(BadMessageException):
             self.mg.get_message(chat=chat, new_chat_photo=photo)
+        with self.assertRaises(BadMessageException):
+            self.mg.get_message(chat=chat, new_chat_photo=[1, 2, 3])
 
     def test_pinned_message(self):
         chat = self.cg.get_chat(type="supergroup")
@@ -306,6 +323,8 @@ class TestMessageGeneratorStatusMessages(unittest.TestCase):
 
         with self.assertRaises(BadChatException):
             self.mg.get_message(pinned_message=message)
+        with self.assertRaises(BadMessageException):
+            self.mg.get_message(chat=chat, pinned_message="message")
 
     def test_multiple_statusmessages(self):
         with self.assertRaises(BadMessageException):
@@ -454,6 +473,8 @@ class TestMessageGeneratorAttachments(unittest.TestCase):
 
         with self.assertRaisesRegexp(BadMessageException, r"telegram\.Photo"):
             self.mg.get_message(photo="photo")
+        with self.assertRaisesRegexp(BadMessageException, r"telegram\.Photo"):
+            self.mg.get_message(photo=[1, 2, 3])
 
 
 if __name__ == '__main__':

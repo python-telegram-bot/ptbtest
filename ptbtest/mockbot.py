@@ -57,7 +57,7 @@ class Mockbot(TelegramObject):
     Parameters:
         username (Optional[str]): Username for this bot. Defaults to 'MockBot'"""
 
-    def __init__(self, username="MockBot"):
+    def __init__(self, username="MockBot", **kwargs):
         self._updates = []
         self.bot = None
         self._username = username

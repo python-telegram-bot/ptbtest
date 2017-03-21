@@ -82,8 +82,17 @@ class TestMockbot(unittest.TestCase):
         self.mockbot.reset()
         self.assertEqual(len(self.mockbot.sent_messages), 0)
 
+    def test_dejson_and_to_dict(self):
+        import json
+        d = self.mockbot.to_dict()
+        self.assertIsInstance(d, dict)
+        js = json.loads(json.dumps(d))
+        b = Mockbot.de_json(js, None)
+        self.assertIsInstance(b, Mockbot)
+
     def test_answerCallbackQuery(self):
-        self.mockbot.answerCallbackQuery(1, "done")
+        self.mockbot.answerCallbackQuery(
+            1, "done", show_alert=True, url="google.com", cache_time=2)
 
         data = self.mockbot.sent_messages[-1]
         self.assertEqual(data['method'], "answerCallbackQuery")
@@ -93,7 +102,13 @@ class TestMockbot(unittest.TestCase):
         r = [
             InlineQueryResult("string", "1"), InlineQueryResult("string", "2")
         ]
-        self.mockbot.answerInlineQuery(1, r)
+        self.mockbot.answerInlineQuery(
+            1,
+            r,
+            is_personal=True,
+            next_offset=3,
+            switch_pm_parameter="asd",
+            switch_pm_text="pm")
 
         data = self.mockbot.sent_messages[-1]
         self.assertEqual(data['method'], "answerInlineQuery")
@@ -105,7 +120,8 @@ class TestMockbot(unittest.TestCase):
         data = self.mockbot.sent_messages[-1]
         self.assertEqual(data['method'], "editMessageCaption")
         self.assertEqual(data['chat_id'], 12)
-        self.mockbot.editMessageCaption(inline_message_id=23)
+        self.mockbot.editMessageCaption(
+            inline_message_id=23, caption="new cap")
         data = self.mockbot.sent_messages[-1]
         self.assertEqual(data['method'], "editMessageCaption")
         with self.assertRaises(TelegramError):
@@ -137,7 +153,11 @@ class TestMockbot(unittest.TestCase):
         self.assertEqual(data['method'], "editMessageText")
         self.assertEqual(data['chat_id'], 1)
         self.assertEqual(data['text'], "test")
-        self.mockbot.editMessageText("test", inline_message_id=1)
+        self.mockbot.editMessageText(
+            "test",
+            inline_message_id=1,
+            parse_mode="Markdown",
+            disable_web_page_preview=True)
         data = self.mockbot.sent_messages[-1]
         self.assertEqual(data['method'], "editMessageText")
         self.assertEqual(data['inline_message_id'], 1)
@@ -186,7 +206,8 @@ class TestMockbot(unittest.TestCase):
         self.assertEqual(data['file_id'], "12345")
 
     def test_getGameHighScores(self):
-        self.mockbot.getGameHighScores(1)
+        self.mockbot.getGameHighScores(
+            1, chat_id=2, message_id=3, inline_message_id=4)
         data = self.mockbot.sent_messages[-1]
 
         self.assertEqual(data['method'], "getGameHighScores")
@@ -204,7 +225,7 @@ class TestMockbot(unittest.TestCase):
         self.assertEqual(data, [])
 
     def test_getUserProfilePhotos(self):
-        self.mockbot.getUserProfilePhotos(1)
+        self.mockbot.getUserProfilePhotos(1, offset=2)
         data = self.mockbot.sent_messages[-1]
 
         self.assertEqual(data['method'], "getUserProfilePhotos")
@@ -224,11 +245,21 @@ class TestMockbot(unittest.TestCase):
         self.assertEqual(data['method'], "leaveChat")
 
     def test_sendAudio(self):
-        self.mockbot.sendAudio(1, "123")
+        self.mockbot.sendAudio(
+            1,
+            "123",
+            duration=2,
+            performer="singer",
+            title="song",
+            caption="this song")
         data = self.mockbot.sent_messages[-1]
 
         self.assertEqual(data['method'], "sendAudio")
         self.assertEqual(data['chat_id'], 1)
+        self.assertEqual(data['duration'], 2)
+        self.assertEqual(data['performer'], "singer")
+        self.assertEqual(data['title'], "song")
+        self.assertEqual(data['caption'], "this song")
 
     def test_sendChatAction(self):
         self.mockbot.sendChatAction(1, ChatAction.TYPING)
@@ -239,20 +270,23 @@ class TestMockbot(unittest.TestCase):
         self.assertEqual(data['action'], "typing")
 
     def test_sendContact(self):
-        self.mockbot.sendContact(1, "123456", "test")
+        self.mockbot.sendContact(1, "123456", "test", last_name="me")
         data = self.mockbot.sent_messages[-1]
 
         self.assertEqual(data['method'], "sendContact")
         self.assertEqual(data['chat_id'], 1)
         self.assertEqual(data['phone_number'], "123456")
+        self.assertEqual(data['last_name'], "me")
 
     def test_sendDocument(self):
-        self.mockbot.sendDocument(1, "45", filename="jaja.docx")
+        self.mockbot.sendDocument(
+            1, "45", filename="jaja.docx", caption="good doc")
         data = self.mockbot.sent_messages[-1]
 
         self.assertEqual(data['method'], "sendDocument")
         self.assertEqual(data['chat_id'], 1)
         self.assertEqual(data['filename'], "jaja.docx")
+        self.assertEqual(data['caption'], "good doc")
 
     def test_sendGame(self):
         self.mockbot.sendGame(1, "testgame")
@@ -279,7 +313,10 @@ class TestMockbot(unittest.TestCase):
             1,
             "test",
             parse_mode=telegram.ParseMode.MARKDOWN,
-            reply_markup=keyb)
+            reply_markup=keyb,
+            disable_notification=True,
+            reply_to_message_id=334,
+            disable_web_page_preview=True)
         data = self.mockbot.sent_messages[-1]
 
         self.assertEqual(data['method'], "sendMessage")
@@ -290,11 +327,12 @@ class TestMockbot(unittest.TestCase):
                 'callback_data'], "test2")
 
     def test_sendPhoto(self):
-        self.mockbot.sendPhoto(1, "test.png")
+        self.mockbot.sendPhoto(1, "test.png", caption="photo")
         data = self.mockbot.sent_messages[-1]
 
         self.assertEqual(data['method'], "sendPhoto")
         self.assertEqual(data['chat_id'], 1)
+        self.assertEqual(data['caption'], "photo")
 
     def test_sendSticker(self):
         self.mockbot.sendSticker(1, "test")
@@ -304,32 +342,46 @@ class TestMockbot(unittest.TestCase):
         self.assertEqual(data['chat_id'], 1)
 
     def test_sendVenue(self):
-        self.mockbot.sendVenue(1, 4.2, 5.1, "nice place", "somewherestreet 2")
+        self.mockbot.sendVenue(
+            1, 4.2, 5.1, "nice place", "somewherestreet 2", foursquare_id=2)
         data = self.mockbot.sent_messages[-1]
 
         self.assertEqual(data['method'], "sendVenue")
         self.assertEqual(data['chat_id'], 1)
+        self.assertEqual(data['foursquare_id'], 2)
 
     def test_sendVideo(self):
-        self.mockbot.sendVideo(1, "some file")
+        self.mockbot.sendVideo(1, "some file", duration=3, caption="video")
         data = self.mockbot.sent_messages[-1]
 
         self.assertEqual(data['method'], "sendVideo")
         self.assertEqual(data['chat_id'], 1)
+        self.assertEqual(data['duration'], 3)
+        self.assertEqual(data['caption'], "video")
 
     def test_sendVoice(self):
-        self.mockbot.sendVoice(1, "some file")
+        self.mockbot.sendVoice(1, "some file", duration=3, caption="voice")
         data = self.mockbot.sent_messages[-1]
 
         self.assertEqual(data['method'], "sendVoice")
         self.assertEqual(data['chat_id'], 1)
+        self.assertEqual(data['duration'], 3)
+        self.assertEqual(data['caption'], "voice")
 
     def test_setGameScore(self):
-        self.mockbot.setGameScore(1, 200)
+        self.mockbot.setGameScore(
+            1,
+            200,
+            chat_id=2,
+            message_id=3,
+            inline_message_id=4,
+            force=True,
+            disable_edit_message=True)
         data = self.mockbot.sent_messages[-1]
 
         self.assertEqual(data['method'], "setGameScore")
         self.assertEqual(data['user_id'], 1)
+        self.mockbot.setGameScore(1, 200, edit_message=True)
 
     def test_unbanChatMember(self):
         self.mockbot.unbanChatMember(1, 2)

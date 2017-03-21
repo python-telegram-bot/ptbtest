@@ -118,8 +118,7 @@ class MessageGenerator(PtbGenerator):
             private (Optional[bool]): If the message is private (optionally with the supplied user) default=True
             text (str): The text for the message, can make use of markdown or html, make sure to specify with parse_mode
             parse_mode (Optional[str]): "HTML" or "Markdown" parses the text and fills entities
-            entities (Optional[lst(telegram.MessageEntity)]): when text and parsemode are set this will be filled with
-            the entities in the text.
+            entities (Optional[lst(telegram.MessageEntity)]): when text and parsemode are set this will be filled with the entities in the text.  # noqa: E501
             reply_to_message (Optional[telegram.Message): Messages this one is a reply to
             forward_from (Optional[telegram.User): User this message is forwarded from
             forward_from_chat (Optional[telegram.Chat]): channel this message is forwarded from
@@ -227,7 +226,7 @@ class MessageGenerator(PtbGenerator):
                 else:
                     raise BadMessageException(
                         "photo must either be True or list(telegram.PhotoSize)")
-            elif isinstance(photo, bool) and photo:
+            elif isinstance(photo, bool):
                 photo = self._get_photosize()
             else:
                 raise BadMessageException(
@@ -301,7 +300,7 @@ class MessageGenerator(PtbGenerator):
     def _handle_forward(self, forward_date, forward_from, forward_from_chat,
                         forward_from_message_id):
         if forward_from and not isinstance(forward_from, User):
-            raise BadUserException
+            raise BadUserException()
         if forward_from_chat:
             if not isinstance(forward_from_chat, Chat):
                 raise BadChatException
@@ -364,13 +363,13 @@ class MessageGenerator(PtbGenerator):
                     pass
                 else:
                     raise BadMessageException(
-                        "new_cat_photo must either be True or list(telegram.PhotoSize)"
+                        "new_cgat_photo must either be True or list(telegram.PhotoSize)"
                     )
             elif isinstance(new_chat_photo, bool) and new_chat_photo:
                 new_chat_photo = self._get_photosize()
             else:
                 raise BadMessageException(
-                    "new_cat_photo must either be True or list(telegram.PhotoSize)"
+                    "new_cgat_photo must either be True or list(telegram.PhotoSize)"
                 )
         if pinned_message:
             if not isinstance(pinned_message, Message):
@@ -383,29 +382,25 @@ class MessageGenerator(PtbGenerator):
         return new_chat_photo
 
     def _get_user_and_chat(self, user, chat, private):
-        if chat and user:
+        if chat:
             if not isinstance(chat, Chat):
                 raise BadChatException
+        if user:
             if not isinstance(user, User):
                 raise BadUserException
-        elif chat:
-            if not isinstance(chat, Chat):
-                raise BadChatException
-            if chat.type == "private":
-                user = self.ug.get_user(
-                    first_name=chat.first_name,
-                    last_name=chat.last_name,
-                    username=chat.username,
-                    id=chat.id)
-            else:
-                user = self.ug.get_user()
+        if chat:
+            if not user:
+                if chat.type == "private":
+                    user = self.ug.get_user(
+                        first_name=chat.first_name,
+                        last_name=chat.last_name,
+                        username=chat.username,
+                        id=chat.id)
+                else:
+                    user = self.ug.get_user()
         elif user and private:
-            if not isinstance(user, User):
-                raise BadUserException
             chat = self.cg.get_chat(user=user)
         elif user:
-            if not isinstance(user, User):
-                raise BadUserException
             chat = self.cg.get_chat(type="group")
         elif private:
             user = self.ug.get_user()
