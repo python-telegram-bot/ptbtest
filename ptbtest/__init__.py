@@ -23,14 +23,17 @@ from .mockbot import Mockbot
 from .usergenerator import UserGenerator
 from .chatgenerator import ChatGenerator
 from .messagegenerator import MessageGenerator
+from .callbackquerygenerator import CallbackQueryGenerator
 from .errors import BadUserException
 from .errors import BadChatException
 from .errors import BadMessageException
 from .errors import BadBotException
 from .errors import BadMarkupException
+from .errors import BadCallbackCQueryException
 
 __all__ = [
     "BadUserException", "BadChatException", "BadMessageException",
     "BadBotException", "Mockbot", "UserGenerator", "ChatGenerator",
-    "MessageGenerator", "BadMarkupException"
+    "MessageGenerator", "BadMarkupException", "CallbackQueryGenerator",
+    "BadCallbackCQueryException"
 ]

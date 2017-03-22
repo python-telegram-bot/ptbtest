@@ -70,8 +70,75 @@ class MessageGenerator(PtbGenerator):
             yield x
             x += 1
 
-    @update
+    @update("edited_channel_post")
+    def get_edited_channel_post(self, channel_post=None, **kwargs):
+        """
+        Parameters:
+            channel_post (Optional(telegram.Message)): The edited_channel_post will the same user, chat and message_id
+            **kwargs: See get_message for the full list
+
+        Returns:
+            telegram.Update: A telegram update object containing a edited_message.
+        """
+
+        id, user, chat = None, None, None
+        if channel_post:
+            if not isinstance(channel_post, Message):
+                raise BadMessageException
+            id = channel_post.message_id
+            user = channel_post.from_user
+            chat = channel_post.chat
+
+        return self.get_channel_post(
+            id=id, user=user, chat=chat, **kwargs).channel_post
+
+    @update("channel_post")
+    def get_channel_post(self, chat=None, user=None, **kwargs):
+        """
+        Parameters:
+            chat (Optional[telegram.Chat]): Chat with type='channel' to use with this update
+            user (Optional[telegram.User]): User for the update. None if omitted
+            **kwargs: See get_message
+
+        Returns:
+            telegram.Update: A telegram update object containing a channel_post.
+        """
+        if chat:
+            if not isinstance(chat, Chat):
+                raise BadChatException
+            if not chat.type == "channel":
+                raise BadChatException(
+                    "Can only use chat.type='channel' for get_channel_post")
+        else:
+            chat = ChatGenerator().get_chat(type="channel")
+
+        return self.get_message(
+            chat=chat, user=user, channel=True, **kwargs).message
+
+    @update("edited_message")
+    def get_edited_message(self, message=None, **kwargs):
+        """
+        Parameters:
+            message (Optional(telegram.Message)): The edited_message will have the same user, chat and message_id
+            **kwargs: See get_message for the full list
+
+        Returns:
+            telegram.Update: A telegram update object containing a edited_message.
+
+        """
+        id, user, chat = None, None, None
+        if message:
+            if not isinstance(message, Message):
+                raise BadMessageException
+            id = message.message_id
+            user = message.from_user
+            chat = message.chat
+
+        return self.get_message(id=id, user=user, chat=chat, **kwargs).message
+
+    @update("message")
     def get_message(self,
+                    id=None,
                     user=None,
                     chat=None,
                     private=True,
@@ -103,7 +170,9 @@ class MessageGenerator(PtbGenerator):
                     channel_chat_created=False,
                     pinned_message=None,
                     forward_from_message_id=None,
-                    parse_mode=None):
+                    parse_mode=None,
+                    channel=False,
+                    bot=None):
         """
         When called without arguments will return an update object for a message from a private chat with a
         random user. for modifiers see args.
@@ -149,7 +218,8 @@ class MessageGenerator(PtbGenerator):
         Returns:
             telegram.Update: A telegram update object containing a message.
         """
-        user, chat = self._get_user_and_chat(user, chat, private)
+        if not channel:
+            user, chat = self._get_user_and_chat(user, chat, private)
 
         if reply_to_message and not isinstance(reply_to_message, Message):
             raise BadMessageException
@@ -171,7 +241,7 @@ class MessageGenerator(PtbGenerator):
             video, voice, caption)
 
         return Message(
-            next(self.idgen),
+            id or next(self.idgen),
             user,
             None,
             chat,
@@ -203,7 +273,7 @@ class MessageGenerator(PtbGenerator):
             pinned_message=pinned_message,
             forward_from_message_id=forward_from_message_id,
             forward_date=forward_date,
-            bot=self.bot)
+            bot=bot or self.bot)
 
     def _handle_attachments(self, audio, contact, document, location, photo,
                             sticker, user, venue, video, voice, caption):
@@ -385,6 +455,9 @@ class MessageGenerator(PtbGenerator):
         if chat:
             if not isinstance(chat, Chat):
                 raise BadChatException
+            if chat.type == "channel":
+                raise BadChatException(
+                    "Use get_channel_post to get channel updates.")
         if user:
             if not isinstance(user, User):
                 raise BadUserException
@@ -430,7 +503,7 @@ class MessageGenerator(PtbGenerator):
         for _ in range(2):
             w, h = randint(40, 400), randint(40, 400)
             s = w * h * 0.3
-            tmp.append(PhotoSize(uuid.uuid4(), w, h, file_size=s))
+            tmp.append(PhotoSize(str(uuid.uuid4()), w, h, file_size=s))
         return tmp
 
     def _get_location(self):
@@ -449,24 +522,25 @@ class MessageGenerator(PtbGenerator):
     def _get_voice(self):
         import uuid
         from random import randint
-        return Voice(uuid.uuid4(), randint(1, 120))
+        return Voice(str(uuid.uuid4()), randint(1, 120))
 
     def _get_video(self):
         import uuid
         from random import randint
-        return Video(uuid.uuid4(),
-                     randint(40, 400), randint(40, 400), randint(2, 300))
+        return Video(
+            str(uuid.uuid4()),
+            randint(40, 400), randint(40, 400), randint(2, 300))
 
     def _get_sticker(self):
         import uuid
         from random import randint
-        return Sticker(uuid.uuid4(), randint(20, 200), randint(20, 200))
+        return Sticker(str(uuid.uuid4()), randint(20, 200), randint(20, 200))
 
     def _get_document(self):
         import uuid
-        return Document(uuid.uuid4(), file_name="somedoc.pdf")
+        return Document(str(uuid.uuid4()), file_name="somedoc.pdf")
 
     def _get_audio(self):
         import uuid
         from random import randint
-        return Audio(uuid.uuid4(), randint(1, 120), title="Some song")
+        return Audio(str(uuid.uuid4()), randint(1, 120), title="Some song")
