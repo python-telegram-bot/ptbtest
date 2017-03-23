@@ -25,6 +25,7 @@ from ptbtest.errors import (BadBotException, BadUserException)
 from ptbtest import InlineQueryGenerator
 from ptbtest import Mockbot
 from ptbtest import UserGenerator
+from telegram import ChosenInlineResult
 from telegram import InlineQuery
 from telegram import Location
 from telegram import Update
@@ -81,6 +82,48 @@ class TestInlineQueryGenerator(unittest.TestCase):
 
         with self.assertRaisesRegexp(AttributeError, "telegram\.Location"):
             self.iqg.get_inline_query(location="location")
+
+
+class TestChosenInlineResult(unittest.TestCase):
+    def setUp(self):
+        self.iqc = InlineQueryGenerator()
+
+    def test_chosen_inline_result(self):
+        u = self.iqc.get_chosen_inline_result("testid")
+        self.assertIsInstance(u, Update)
+        self.assertIsInstance(u.chosen_inline_result, ChosenInlineResult)
+        self.assertIsInstance(u.chosen_inline_result.from_user, User)
+        self.assertEqual(u.chosen_inline_result.result_id, "testid")
+
+        with self.assertRaisesRegexp(AttributeError, "chosen_inline_result"):
+            self.iqc.get_chosen_inline_result()
+
+    def test_with_location(self):
+        u = self.iqc.get_chosen_inline_result("testid", location=True)
+        self.assertIsInstance(u.chosen_inline_result.location, Location)
+        loc = Location(23.0, 90.0)
+        u = self.iqc.get_chosen_inline_result("testid", location=loc)
+        self.assertEqual(u.chosen_inline_result.location.longitude, 23.0)
+
+        with self.assertRaisesRegexp(AttributeError, "telegram\.Location"):
+            self.iqc.get_chosen_inline_result("test_id", location="loc")
+
+    def test_inline_message_id(self):
+        u = self.iqc.get_chosen_inline_result("test")
+        self.assertIsInstance(u.chosen_inline_result.inline_message_id, str)
+
+        u = self.iqc.get_chosen_inline_result(
+            "test", inline_message_id="myidilike")
+        self.assertEqual(u.chosen_inline_result.inline_message_id, "myidilike")
+
+    def test_user(self):
+        ug = UserGenerator()
+        user = ug.get_user()
+        u = self.iqc.get_chosen_inline_result("test", user=user)
+        self.assertEqual(u.chosen_inline_result.from_user.id, user.id)
+
+        with self.assertRaises(BadUserException):
+            self.iqc.get_chosen_inline_result("test", user="user")
 
 
 if __name__ == '__main__':

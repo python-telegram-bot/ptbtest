@@ -21,6 +21,7 @@
 """This module provides a class to generate telegram callback queries"""
 import uuid
 
+from telegram import ChosenInlineResult
 from .updategenerator import update
 from .ptbgenerator import PtbGenerator
 from ptbtest import (Mockbot, UserGenerator)
@@ -103,6 +104,61 @@ class InlineQueryGenerator(PtbGenerator):
             offset=offset,
             location=location,
             bot=self.bot)
+
+    @update("chosen_inline_result")
+    def get_chosen_inline_result(self,
+                                 result_id=None,
+                                 query=None,
+                                 user=None,
+                                 location=None,
+                                 inline_message_id=None):
+        """
+        Returns a telegram.Update object containing a inline_query.
+
+        Parameters:
+            result_id (str): The result_id belonging to this chosen result
+            inline_message_id (Optional[str]): Of omitted will be generated
+            location (Optional[telegram.Location or True]): simulates a location
+            query (Optional[str]): The query used to send this query
+            user (Optional[telegram.User): If omitted will be randomly generated
+
+        Returns:
+            telegram.Update: an update containing a :py:class:`telegram.ChosenInlineResult`
+
+        """
+        if not result_id:
+            raise AttributeError(
+                "result_id must be present for chosen_inline_result")
+
+        if user:
+            if not isinstance(user, User):
+                raise BadUserException
+        else:
+            user = self.ug.get_user()
+
+        if not query:
+            query = ""
+
+        if location:
+            if isinstance(location, Location):
+                pass
+            elif isinstance(location, bool):
+                import random
+                location = Location(
+                    random.uniform(-180, 180), random.uniform(-90, 90))
+            else:
+                raise AttributeError(
+                    "Location must be either telegram.Location or True")
+
+        if not inline_message_id:
+            inline_message_id = self._gen_id()
+
+        return ChosenInlineResult(
+            result_id=result_id,
+            from_user=user,
+            query=query,
+            location=location,
+            inline_message_id=inline_message_id)
 
     def _gen_id(self):
         return str(uuid.uuid4())
