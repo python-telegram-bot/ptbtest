@@ -45,9 +45,9 @@ class BadBotException(Exception):
                                               'Invalid ptbtest.Mockbot object')
 
 
-class BadCallbackCQueryException(Exception):
+class BadCallbackQueryException(Exception):
     def __init__(self, error=None):
-        super(BadCallbackCQueryException, self).__init__(
+        super(BadCallbackQueryException, self).__init__(
             error or 'Invalid telegram.CallbackQuery object')
 
 

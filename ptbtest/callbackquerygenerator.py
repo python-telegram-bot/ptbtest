@@ -21,17 +21,12 @@
 """This module provides a class to generate telegram callback queries"""
 import uuid
 
-from ptbtest import ChatGenerator
-from ptbtest.errors import (BadBotException, BadCallbackCQueryException,
-                            BadMessageException, BadUserException)
-from ptbtest import MessageGenerator
-from ptbtest import Mockbot
-from ptbtest import UserGenerator
-from ptbtest.updategenerator import update
-from telegram import CallbackQuery
-from telegram import Message
-from telegram import User
+from .updategenerator import update
 from .ptbgenerator import PtbGenerator
+from ptbtest import (ChatGenerator, MessageGenerator, Mockbot, UserGenerator)
+from ptbtest.errors import (BadBotException, BadCallbackQueryException,
+                            BadMessageException, BadUserException)
+from telegram import (CallbackQuery, Message, User)
 
 
 class CallbackQueryGenerator(PtbGenerator):
@@ -65,15 +60,22 @@ class CallbackQueryGenerator(PtbGenerator):
                            game_short_name=None):
         """
 
-        Args:
-            user (Optional[telegram.User]):
-            chat_instance (Optional[str]):
-            message (Optional[telegram.Message]):
-            data (Optional[string]):
-            inline_message_id (Optional[str]):
-            game_short_name (Optional[str]):
+        Returns a telegram.Update object containing a callback_query.
+
+        Notes:
+            One of message and inline_message_id must be present
+            One of data and game_short_name must be present
+
+        Parameters:
+            user (Optional[telegram.User]): User that initiated the callback_query
+            chat_instance (Optional[str]): unique identifier, not used
+            message (Optional[telegram.Message]): Message the callback_query button belongs to
+            inline_message_id (Optional[str]): Message the callback_query button belongs to
+            data (Optional[string]): Data attached to the button
+            game_short_name (Optional[str]): game identifier with this button
 
         Returns:
+            telegram.Update: containing a :py:class:`telegram.CallbackQuery`
 
         """
         # Required
@@ -88,7 +90,7 @@ class CallbackQueryGenerator(PtbGenerator):
         if message:
             if isinstance(message, Message):
                 pass
-            if isinstance(message, bool):
+            elif isinstance(message, bool):
                 chat = ChatGenerator().get_chat(user=user)
                 message = MessageGenerator().get_message(
                     user=self.bot.getMe(), chat=chat,
@@ -98,18 +100,18 @@ class CallbackQueryGenerator(PtbGenerator):
         if inline_message_id:
             if isinstance(inline_message_id, str):
                 pass
-            if isinstance(inline_message_id, bool):
+            elif isinstance(inline_message_id, bool):
                 inline_message_id = self._gen_id()
             else:
-                BadCallbackCQueryException(
+                raise BadCallbackQueryException(
                     "inline_message_id should be string or True")
 
         if not len([x for x in [message, inline_message_id] if x]) == 1:
-            raise BadCallbackCQueryException(
+            raise BadCallbackQueryException(
                 "exactly 1 of message and inline_message_id is needed")
 
         if not len([x for x in [data, game_short_name] if x]) == 1:
-            raise BadCallbackCQueryException(
+            raise BadCallbackQueryException(
                 "exactly 1 of data and game_short_name is needed")
 
         return CallbackQuery(self._gen_id(), user, chat_instance, message,

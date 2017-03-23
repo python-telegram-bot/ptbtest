@@ -19,26 +19,18 @@
 # You should have received a copy of the GNU Lesser Public License
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
 """This module provides a class to generate telegram mesages"""
-from telegram import Audio
-from telegram import Contact
-from telegram import Document
-from telegram import Location
-from telegram import PhotoSize
-from telegram import Sticker
-from telegram import Venue
-from telegram import Video
-from telegram import Voice
-from .ptbgenerator import PtbGenerator
-from telegram import Message, Chat, User
-from ptbtest import UserGenerator, ChatGenerator
-from ptbtest.errors import BadUserException, BadMessageException
-from ptbtest.errors import BadChatException, BadBotException
-from ptbtest.errors import BadMarkupException
-from ptbtest.updategenerator import update
 import datetime
 import time
-from ptbtest import Mockbot
+
+from .updategenerator import update
+from .ptbgenerator import PtbGenerator
 from .entityparser import EntityParser
+from ptbtest import (UserGenerator, ChatGenerator, Mockbot)
+from ptbtest.errors import (BadUserException, BadMessageException,
+                            BadChatException, BadBotException,
+                            BadMarkupException)
+from telegram import (Audio, Chat, Contact, Document, Location, Message,
+                      PhotoSize, Sticker, User, Venue, Video, Voice)
 
 
 class MessageGenerator(PtbGenerator):
@@ -78,7 +70,7 @@ class MessageGenerator(PtbGenerator):
             **kwargs: See get_message for the full list
 
         Returns:
-            telegram.Update: A telegram update object containing a edited_message.
+            telegram.Update: A telegram update object containing a :py:class:`telegram.Message`.
         """
 
         id, user, chat = None, None, None
@@ -101,7 +93,7 @@ class MessageGenerator(PtbGenerator):
             **kwargs: See get_message
 
         Returns:
-            telegram.Update: A telegram update object containing a channel_post.
+            telegram.Update: A telegram update object containing a :py:class:`telegram.Message.
         """
         if chat:
             if not isinstance(chat, Chat):
@@ -123,7 +115,7 @@ class MessageGenerator(PtbGenerator):
             **kwargs: See get_message for the full list
 
         Returns:
-            telegram.Update: A telegram update object containing a edited_message.
+            telegram.Update: A telegram update object containing a :py:class:`telegram.Message`.
 
         """
         id, user, chat = None, None, None
@@ -216,7 +208,7 @@ class MessageGenerator(PtbGenerator):
             audio (Optional[telegram.Audio] or True): Either the right object or True to generate one
 
         Returns:
-            telegram.Update: A telegram update object containing a message.
+            telegram.Update: A telegram update object containing a :py:class:`telegram.Message`.
         """
         if not channel:
             user, chat = self._get_user_and_chat(user, chat, private)

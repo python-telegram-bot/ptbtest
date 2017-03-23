@@ -19,8 +19,9 @@
 # You should have received a copy of the GNU Lesser Public License
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
 """This module provides a decorator to generate telegram updates"""
-from telegram import Update
 import functools
+
+from telegram import Update
 
 
 def _gen_id():

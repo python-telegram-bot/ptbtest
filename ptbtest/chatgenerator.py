@@ -19,10 +19,11 @@
 # You should have received a copy of the GNU Lesser Public License
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
 """This module provides a class to generate telegram chats"""
-from telegram import Chat, User
+import random
+
 from .ptbgenerator import PtbGenerator
 from ptbtest import UserGenerator
-import random
+from telegram import (Chat, User)
 
 
 class ChatGenerator(PtbGenerator):
