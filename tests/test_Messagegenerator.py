@@ -260,7 +260,7 @@ class TestMessageGeneratorForwards(unittest.TestCase):
             u = self.mg.get_message(text="This is a test", forward_from_chat=c)
 
         with self.assertRaises(BadChatException):
-            c = self.cg.get_chat("group")
+            c = self.cg.get_chat(type="group")
             u = self.mg.get_message(text="This is a test", forward_from_chat=c)
 
 
@@ -302,7 +302,7 @@ class TestMessageGeneratorStatusMessages(unittest.TestCase):
             self.mg.get_message(new_chat_title="New title")
 
     def test_new_chat_photo(self):
-        chat = self.cg.get_chat("group")
+        chat = self.cg.get_chat(type="group")
         u = self.mg.get_message(chat=chat, new_chat_photo=True)
         self.assertIsInstance(u.message.new_chat_photo, list)
         self.assertIsInstance(u.message.new_chat_photo[0], PhotoSize)

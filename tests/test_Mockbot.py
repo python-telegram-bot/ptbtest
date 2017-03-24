@@ -41,7 +41,8 @@ class TestMockbot(unittest.TestCase):
     def test_updater_works_with_mockbot(self):
         # handler method
         def start(bot, update):
-            bot.sendMessage(update.message.chat_id, "this works")
+            message = bot.sendMessage(update.message.chat_id, "this works")
+            self.assertIsInstance(message, Message)
 
         updater = Updater(workers=2, bot=self.mockbot)
         dp = updater.dispatcher
@@ -121,7 +122,7 @@ class TestMockbot(unittest.TestCase):
         self.assertEqual(data['method'], "editMessageCaption")
         self.assertEqual(data['chat_id'], 12)
         self.mockbot.editMessageCaption(
-            inline_message_id=23, caption="new cap")
+            inline_message_id=23, caption="new cap", photo=True)
         data = self.mockbot.sent_messages[-1]
         self.assertEqual(data['method'], "editMessageCaption")
         with self.assertRaises(TelegramError):
@@ -335,11 +336,11 @@ class TestMockbot(unittest.TestCase):
         self.assertEqual(data['caption'], "photo")
 
     def test_sendSticker(self):
-        self.mockbot.sendSticker(1, "test")
+        self.mockbot.sendSticker(-4231, "test")
         data = self.mockbot.sent_messages[-1]
 
         self.assertEqual(data['method'], "sendSticker")
-        self.assertEqual(data['chat_id'], 1)
+        self.assertEqual(data['chat_id'], -4231)
 
     def test_sendVenue(self):
         self.mockbot.sendVenue(

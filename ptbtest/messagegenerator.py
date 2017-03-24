@@ -296,6 +296,8 @@ class MessageGenerator(PtbGenerator):
         if location:
             if isinstance(location, Location):
                 pass
+            elif isinstance(location, dict):
+                location = Location(**location)
             elif isinstance(location, bool):
                 location = self._get_location()
             else:
@@ -306,12 +308,17 @@ class MessageGenerator(PtbGenerator):
                 pass
             elif isinstance(venue, bool):
                 venue = self._get_venue()
+            elif isinstance(venue, dict):
+                venue['location'] = Location(**venue)
+                venue = Venue(**venue)
             else:
                 raise BadMessageException(
                     "venue must either be True or telegram.Venue")
         if contact:
             if isinstance(contact, Contact):
                 pass
+            elif isinstance(contact, dict):
+                contact = Contact(**contact)
             elif isinstance(contact, bool):
                 contact = self._get_contact(user)
             else:
@@ -322,6 +329,8 @@ class MessageGenerator(PtbGenerator):
                 pass
             elif isinstance(voice, bool):
                 voice = self._get_voice()
+            elif isinstance(voice, dict):
+                voice = Voice(**voice)
             else:
                 raise BadMessageException(
                     "voice must either be True or telegram.Voice")
@@ -330,6 +339,8 @@ class MessageGenerator(PtbGenerator):
                 pass
             elif isinstance(video, bool):
                 video = self._get_video()
+            elif isinstance(video, dict):
+                video = self._get_video(data=video)
             else:
                 raise BadMessageException(
                     "video must either be True or telegram.Video")
@@ -338,22 +349,29 @@ class MessageGenerator(PtbGenerator):
                 pass
             elif isinstance(sticker, bool):
                 sticker = self._get_sticker()
+            elif isinstance(sticker, dict):
+                sticker = self._get_sticker(sticker)
             else:
                 raise BadMessageException(
                     "sticker must either be True or telegram.Sticker")
         if document:
             if isinstance(document, Document):
                 pass
+            elif isinstance(document, dict):
+                document = Document(**document)
             elif isinstance(document, bool):
                 document = self._get_document()
             else:
                 raise BadMessageException(
                     "document must either be True or telegram.Document")
         if audio:
+            print audio
             if isinstance(audio, Audio):
                 pass
             elif isinstance(audio, bool):
                 audio = self._get_audio()
+            elif isinstance(audio, dict):
+                audio = Audio(**audio)
             else:
                 raise BadMessageException(
                     "audio must either be True or telegram.Audio")
@@ -516,16 +534,24 @@ class MessageGenerator(PtbGenerator):
         from random import randint
         return Voice(str(uuid.uuid4()), randint(1, 120))
 
-    def _get_video(self):
+    def _get_video(self, data=None):
         import uuid
         from random import randint
+        if data:
+            data['width'] = randint(40, 400)
+            data['height'] = randint(40, 400)
+            return Video(**data)
         return Video(
             str(uuid.uuid4()),
             randint(40, 400), randint(40, 400), randint(2, 300))
 
-    def _get_sticker(self):
+    def _get_sticker(self, data=None):
         import uuid
         from random import randint
+        if data:
+            data['width'] = randint(20, 200)
+            data['height'] = randint(20, 200)
+            return Sticker(**data)
         return Sticker(str(uuid.uuid4()), randint(20, 200), randint(20, 200))
 
     def _get_document(self):
