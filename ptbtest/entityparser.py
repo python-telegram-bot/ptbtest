@@ -20,6 +20,7 @@
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
 """This module provides a helperclass to transform marked_up messages to plaintext with entities"""
 import re
+
 from ptbtest.errors import BadMarkupException
 from telegram import MessageEntity
 

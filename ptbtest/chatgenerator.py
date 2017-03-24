@@ -19,10 +19,11 @@
 # You should have received a copy of the GNU Lesser Public License
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
 """This module provides a class to generate telegram chats"""
-from telegram import Chat, User
+import random
+
 from .ptbgenerator import PtbGenerator
 from ptbtest import UserGenerator
-import random
+from telegram import (Chat, User)
 
 
 class ChatGenerator(PtbGenerator):
@@ -39,6 +40,7 @@ class ChatGenerator(PtbGenerator):
         PtbGenerator.__init__(self)
 
     def get_chat(self,
+                 cid=None,
                  type="private",
                  title=None,
                  username=None,
@@ -63,11 +65,14 @@ class ChatGenerator(PtbGenerator):
             telegram.Chat: A telegram Chat object.
 
         """
+        if cid and type == 'private':
+            if cid < 0:
+                type = "group"
         if user:
             if isinstance(user, User):
                 u = user
                 return Chat(
-                    u.id,
+                    cid or u.id,
                     type,
                     username=u.username,
                     first_name=u.first_name,
@@ -75,7 +80,7 @@ class ChatGenerator(PtbGenerator):
         elif type == "private":
             u = UserGenerator().get_user(username=username)
             return Chat(
-                u.id,
+                cid or u.id,
                 type,
                 username=u.username,
                 first_name=u.first_name,
@@ -84,7 +89,7 @@ class ChatGenerator(PtbGenerator):
             if not title:
                 title = random.choice(self.GROUPNAMES)
             return Chat(
-                self.gen_id(group=True),
+                cid or self.gen_id(group=True),
                 type,
                 title=title,
                 all_members_are_administrators=all_members_are_administrators)
@@ -96,4 +101,7 @@ class ChatGenerator(PtbGenerator):
             if not username:
                 username = "".join(gn.split(" "))
             return Chat(
-                self.gen_id(group=True), type, title=gn, username=username)
+                cid or self.gen_id(group=True),
+                type,
+                title=gn,
+                username=username)

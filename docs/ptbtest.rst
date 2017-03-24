@@ -6,14 +6,16 @@ Submodules
 
 .. toctree::
 
+   ptbtest.callbackquerygenerator
    ptbtest.chatgenerator
+   ptbtest.entityparser
+   ptbtest.errors
+   ptbtest.inlinequerygenerator
    ptbtest.messagegenerator
    ptbtest.mockbot
    ptbtest.ptbgenerator
-   ptbtest.usergenerator
-   ptbtest.errors
    ptbtest.updategenerator
-   ptbtest.entityparser
+   ptbtest.usergenerator
 
 
 Module contents

@@ -19,8 +19,9 @@
 # You should have received a copy of the GNU Lesser Public License
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
 """This module provides a decorator to generate telegram updates"""
-from telegram import Update
 import functools
+
+from telegram import Update
 
 
 def _gen_id():
@@ -33,13 +34,33 @@ def _gen_id():
 idgen = _gen_id()
 
 
-def update(func):
+def update(messtype):
     """
-    Decorator used by the generatorclasses to wrap the
+    Decorator used by the generatorclasses to wrap the produced method in an update.
     """
 
-    @functools.wraps(func)
-    def decorated_func(self, *args, **kwargs):
-        return Update(next(idgen), func(self, *args, **kwargs))
+    def _update(func):
+        @functools.wraps(func)
+        def decorated_func(self, *args, **kwargs):
+            tmp = dict(
+                message=None,
+                edited_message=None,
+                inline_query=None,
+                chosen_inline_result=None,
+                callback_query=None,
+                channel_post=None,
+                edited_channel_post=None)
+            tmp[messtype] = func(self, *args, **kwargs)
+            return Update(
+                next(idgen),
+                message=tmp['message'],
+                edited_message=tmp['edited_message'],
+                inline_query=tmp['inline_query'],
+                chosen_inline_result=tmp['chosen_inline_result'],
+                callback_query=tmp['callback_query'],
+                channel_post=tmp['channel_post'],
+                edited_channel_post=tmp['edited_channel_post'])
 
-    return decorated_func
+        return decorated_func
+
+    return _update

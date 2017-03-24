@@ -45,6 +45,12 @@ class BadBotException(Exception):
                                               'Invalid ptbtest.Mockbot object')
 
 
+class BadCallbackQueryException(Exception):
+    def __init__(self, error=None):
+        super(BadCallbackQueryException, self).__init__(
+            error or 'Invalid telegram.CallbackQuery object')
+
+
 class BadMarkupException(Exception):
     def __init__(self, error=None):
         super(BadMarkupException, self).__init__(error or 'Bad markup error')

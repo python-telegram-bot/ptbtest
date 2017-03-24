@@ -62,6 +62,10 @@ class Mockbot(TelegramObject):
         self.bot = None
         self._username = username
         self._sendmessages = []
+        from .messagegenerator import MessageGenerator
+        from .chatgenerator import ChatGenerator
+        self.mg = MessageGenerator(bot=self)
+        self.cg = ChatGenerator()
 
     @property
     def sent_messages(self):
@@ -134,6 +138,52 @@ class Mockbot(TelegramObject):
                     data['reply_markup'] = reply_markup
             data['method'] = func.__name__
             self._sendmessages.append(data)
+            if data['method'] in ['sendChatAction']:
+                return True
+            dat = kwargs.copy()
+            dat.update(data)
+            del (dat['method'])
+            dat.pop('disable_web_page_preview', "")
+            dat.pop('disable_notification', "")
+            dat.pop('reply_markup', "")
+            dat['user'] = self.getMe()
+            cid = dat.pop('chat_id', None)
+            if cid:
+                dat['chat'] = self.cg.get_chat(cid=cid)
+            else:
+                dat['chat'] = None
+            mid = dat.pop('reply_to_message_id', None)
+            if mid:
+                dat['reply_to_message'] = self.mg.get_message(
+                    id=mid, chat=dat['chat']).message
+            dat['forward_from_message_id'] = dat.pop('message_id', None)
+            cid = dat.pop('from_chat_id', None)
+            if cid:
+                dat['forward_from_chat'] = self.cg.get_chat(
+                    cid=cid, type='channel')
+            dat.pop('inline_message_id', None)
+            dat.pop('performer', '')
+            dat.pop('title', '')
+            dat.pop('duration', '')
+            dat.pop('duration', '')
+            dat.pop('phone_number', '')
+            dat.pop('first_name', '')
+            dat.pop('last_name', '')
+            dat.pop('filename', '')
+            dat.pop('latitude', '')
+            dat.pop('longitude', '')
+            dat.pop('foursquare_id', '')
+            dat.pop('address', '')
+            dat.pop('game_short_name', '')
+            dat['document'] = dat.pop('document2', None)
+            dat['audio'] = dat.pop('audio2', None)
+            dat['voice'] = dat.pop('voice2', None)
+            dat['video'] = dat.pop('video2', None)
+            dat['sticker'] = dat.pop('sticker2', None)
+            phot = dat.pop('photo', None)
+            if phot:
+                dat['photo'] = True
+            return self.mg.get_message(**dat)
 
         return decorator
 
@@ -211,14 +261,18 @@ class Mockbot(TelegramObject):
                   timeout=None,
                   **kwargs):
         data = {'chat_id': chat_id, 'audio': audio}
-
+        data['audio2'] = {'file_id': audio}
         if duration:
             data['duration'] = duration
+            data['audio2']['duration'] = duration
         if performer:
             data['performer'] = performer
+            data['audio2']['performer'] = performer
         if title:
             data['title'] = title
+            data['audio2']['title'] = title
         if caption:
+            data['caption'] = caption
             data['caption'] = caption
 
         return data
@@ -234,10 +288,16 @@ class Mockbot(TelegramObject):
                      reply_markup=None,
                      timeout=None,
                      **kwargs):
-        data = {'chat_id': chat_id, 'document': document}
-
+        data = {
+            'chat_id': chat_id,
+            'document': document,
+            'document2': {
+                'file_id': document
+            }
+        }
         if filename:
             data['filename'] = filename
+            data['document2']['file_name'] = filename
         if caption:
             data['caption'] = caption
 
@@ -252,7 +312,13 @@ class Mockbot(TelegramObject):
                     reply_markup=None,
                     timeout=None,
                     **kwargs):
-        data = {'chat_id': chat_id, 'sticker': sticker}
+        data = {
+            'chat_id': chat_id,
+            'sticker': sticker,
+            'sticker2': {
+                'file_id': sticker
+            }
+        }
 
         return data
 
@@ -267,10 +333,17 @@ class Mockbot(TelegramObject):
                   reply_markup=None,
                   timeout=None,
                   **kwargs):
-        data = {'chat_id': chat_id, 'video': video}
+        data = {
+            'chat_id': chat_id,
+            'video': video,
+            'video2': {
+                'file_id': video
+            }
+        }
 
         if duration:
             data['duration'] = duration
+            data['video2']['duration'] = duration
         if caption:
             data['caption'] = caption
 
@@ -287,10 +360,17 @@ class Mockbot(TelegramObject):
                   reply_markup=None,
                   timeout=None,
                   **kwargs):
-        data = {'chat_id': chat_id, 'voice': voice}
+        data = {
+            'chat_id': chat_id,
+            'voice': voice,
+            'voice2': {
+                'file_id': voice
+            }
+        }
 
         if duration:
             data['duration'] = duration
+            data['voice2']['duration'] = duration
         if caption:
             data['caption'] = caption
 
@@ -309,7 +389,11 @@ class Mockbot(TelegramObject):
         data = {
             'chat_id': chat_id,
             'latitude': latitude,
-            'longitude': longitude
+            'longitude': longitude,
+            'location': {
+                'latitude': latitude,
+                'longitude': longitude
+            }
         }
 
         return data
@@ -332,11 +416,18 @@ class Mockbot(TelegramObject):
             'latitude': latitude,
             'longitude': longitude,
             'address': address,
-            'title': title
+            'title': title,
+            'venue': {
+                'latitude': latitude,
+                'longitude': longitude,
+                'address': address,
+                'title': title
+            }
         }
 
         if foursquare_id:
             data['foursquare_id'] = foursquare_id
+            data['venue']['foursquare_id'] = foursquare_id
 
         return data
 
@@ -354,11 +445,16 @@ class Mockbot(TelegramObject):
         data = {
             'chat_id': chat_id,
             'phone_number': phone_number,
-            'first_name': first_name
+            'first_name': first_name,
+            'contact': {
+                'phone_number': phone_number,
+                'first_name': first_name
+            }
         }
 
         if last_name:
             data['last_name'] = last_name
+            data['contact']['last_name'] = last_name
 
         return data
 
