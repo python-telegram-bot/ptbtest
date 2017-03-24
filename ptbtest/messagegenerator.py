@@ -365,6 +365,7 @@ class MessageGenerator(PtbGenerator):
                 raise BadMessageException(
                     "document must either be True or telegram.Document")
         if audio:
+            print audio
             if isinstance(audio, Audio):
                 pass
             elif isinstance(audio, bool):
