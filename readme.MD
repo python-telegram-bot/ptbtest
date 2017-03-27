@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/Eldinnie/ptbtest.svg?branch=master)](https://travis-ci.org/Eldinnie/ptbtest) [![Documentation Status](https://readthedocs.org/projects/ptbtestsuite/badge/?version=master)](http://ptbtestsuite.readthedocs.io/en/master/?badge=master) [![Coverage Status](https://coveralls.io/repos/github/Eldinnie/ptbtest/badge.svg?branch=master)](https://coveralls.io/github/Eldinnie/ptbtest?branch=master)
+[![PyPI](https://img.shields.io/pypi/pyversions/ptbtest.svg)](https://pypi.python.org/pypi/ptbtest) [![PyPI](https://img.shields.io/pypi/l/ptbtest.svg)](https://pypi.python.org/pypi/ptbtest) [![PyPI](https://img.shields.io/pypi/v/ptbtest.svg)](https://pypi.python.org/pypi/ptbtest)
 
 # ptbtest
 ## a testsuite for [Python telegram bot](https://github.com/python-telegram-bot/python-telegram-bot/)
