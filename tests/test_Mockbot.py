@@ -21,7 +21,6 @@
 from __future__ import absolute_import
 
 import unittest
-from time import sleep
 
 import telegram
 from telegram import ChatAction
@@ -62,7 +61,6 @@ class TestMockbot(unittest.TestCase):
         self.mockbot.insertUpdate(Update(1, message=message2))
         self.mockbot.insertUpdate(Update(1, message=message3))
         self.mockbot.insertUpdate(Update(1, message=message4))
-        sleep(.1)
         data = self.mockbot.sent_messages
         self.assertEqual(len(data), 2)
         data = data[0]

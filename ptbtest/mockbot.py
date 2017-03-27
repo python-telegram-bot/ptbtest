@@ -24,6 +24,8 @@ import functools
 import logging
 import warnings
 
+import time
+
 from telegram import (User, ReplyMarkup, TelegramObject)
 from telegram.error import TelegramError
 
@@ -183,7 +185,7 @@ class Mockbot(TelegramObject):
             phot = dat.pop('photo', None)
             if phot:
                 dat['photo'] = True
-            return self.mg.get_message(**dat)
+            return self.mg.get_message(**dat).message
 
         return decorator
 
@@ -647,6 +649,7 @@ class Mockbot(TelegramObject):
             update (telegram.Update): The update to insert in the queue.
         """
         self._updates.append(update)
+        time.sleep(.3)
 
     def getUpdates(self,
                    offset=None,
