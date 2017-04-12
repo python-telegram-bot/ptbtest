@@ -10,4 +10,4 @@ The following things make this library attractive to create unittests
 * Works with the updater from telegram.ext
 * Generatorclasses to easily create Users, Chats and Updates.
 
-Read the [documentation](https://readthedocs.org/projects/ptbtestsuite/badge/?version=master) for further reading and check out the examples.
+Read the [documentation](http://ptbtestsuite.readthedocs.io/en/master/?badge=master) for further reading and check out the examples.
