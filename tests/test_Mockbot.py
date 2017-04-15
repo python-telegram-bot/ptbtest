@@ -380,7 +380,7 @@ class TestMockbot(unittest.TestCase):
 
         self.assertEqual(data['method'], "setGameScore")
         self.assertEqual(data['user_id'], 1)
-        self.mockbot.setGameScore(1, 200, edit_message=True)
+        self.mockbot.setGameScore(1, 200, disable_edit_message=True)
 
     def test_unbanChatMember(self):
         self.mockbot.unbanChatMember(1, 2)
