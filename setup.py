@@ -11,7 +11,7 @@ with codecs.open("readme.rst", "r", "utf-8") as fd:
         license='GNU General Public License v3.0',
         author='Pieter Schutz',
         author_email='pieter.schutz@gmail.com',
-        description='A testsuit for use with python-telegram-bot',
+        description='A test suit for use with python-telegram-bot',
         long_description=fd.read(),
         install_requires=['python-telegram-bot'],
         keywords='python telegram bot unittest',

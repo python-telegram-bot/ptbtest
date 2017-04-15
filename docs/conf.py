@@ -36,7 +36,7 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinx.ext.intersphi
 templates_path = ['_templates']
 
 intersphinx_mapping = {'telegram': ('http://python-telegram-bot.readthedocs.io/en/latest/', None)}
-# The suffix(es) of source filenames.
+# The suffix(es) of source file names.
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']

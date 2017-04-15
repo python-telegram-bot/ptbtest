@@ -2,7 +2,7 @@
 # pylint: disable=E0611,E0213,E1102,C0103,E1101,W0613,R0913,R0904
 #
 # A library that provides a testing suite fot python-telegram-bot
-# wich can be found on https://github.com/python-telegram-bot/python-telegram-bot
+# which can be found on https://github.com/python-telegram-bot/python-telegram-bot
 # Copyright (C) 2017
 # Pieter Schutz - https://github.com/eldinnie
 #
@@ -19,17 +19,19 @@
 # You should have received a copy of the GNU Lesser Public License
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
 from __future__ import absolute_import
+
 import unittest
 
-from ptbtest.errors import (BadBotException, BadUserException)
-from ptbtest import InlineQueryGenerator
-from ptbtest import Mockbot
-from ptbtest import UserGenerator
 from telegram import ChosenInlineResult
 from telegram import InlineQuery
 from telegram import Location
 from telegram import Update
 from telegram import User
+
+from ptbtest import InlineQueryGenerator
+from ptbtest import Mockbot
+from ptbtest import UserGenerator
+from ptbtest.errors import (BadBotException, BadUserException)
 
 
 class TestInlineQueryGenerator(unittest.TestCase):

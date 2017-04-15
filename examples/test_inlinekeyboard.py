@@ -45,7 +45,7 @@ class TestInlineKeyboard(unittest.TestCase):
         dp.add_handler(CallbackQueryHandler(button))
         self.updater.start_polling()
 
-        # the start callback in this example generates a message that will be edited, so let's mimick that message
+        # the start callback in this example generates a message that will be edited, so let's mimic that message
         # for future reference
         keyboard = [[InlineKeyboardButton("Option 1", callback_data='1'),
                      InlineKeyboardButton("Option 2", callback_data='2')],

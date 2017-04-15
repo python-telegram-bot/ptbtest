@@ -43,7 +43,7 @@ class TestEchobot2(unittest.TestCase):
         # Then register the handler with he updater's dispatcher and start polling
         self.updater.dispatcher.add_handler(CommandHandler("help", help))
         self.updater.start_polling()
-        # We want to simulate a message. Since we don't care wich user sends it we let the MessageGenerator
+        # We want to simulate a message. Since we don't care which user sends it we let the MessageGenerator
         # create random ones
         update = self.mg.get_message(text="/help")
         # We insert the update with the bot so the updater can retrieve it.

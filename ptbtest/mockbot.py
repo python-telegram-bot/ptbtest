@@ -2,7 +2,7 @@
 # pylint: disable=E0611,E0213,E1102,C0103,E1101,W0613,R0913,R0904
 #
 # A library that provides a testing suite fot python-telegram-bot
-# wich can be found on https://github.com/python-telegram-bot/python-telegram-bot
+# which can be found on https://github.com/python-telegram-bot/python-telegram-bot
 # Copyright (C) 2017
 # Pieter Schutz - https://github.com/eldinnie
 #
@@ -34,7 +34,7 @@ logging.getLogger(__name__).addHandler(logging.NullHandler())
 class Mockbot(TelegramObject):
     """
     The Mockbot is a fake telegram-bot that does not require a token or a connection to the telegram
-    servers. It's used to mimmick all methods of python-telegram-bot instance, but never contact the telegram servers.
+    servers. It's used to mimic all methods of python-telegram-bot instance, but never contact the telegram servers.
     All methods as described in :py:class:`telegram.Bot` are functional and described here are only
     the special methods added for testing functionality
 
@@ -632,7 +632,7 @@ class Mockbot(TelegramObject):
 
     def insertUpdate(self, update):
         """
-        This inserts an update into the the bot's storage. these will be retreived on a call to
+        This inserts an update into the the bot's storage. these will be retrieved on a call to
         getUpdates which is used by the :py:class:`telegram.Updater`. This way the updater can function without any
         modifications.
 
