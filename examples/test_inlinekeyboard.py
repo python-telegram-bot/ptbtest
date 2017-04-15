@@ -1,12 +1,13 @@
 from __future__ import absolute_import
+
 import unittest
 
-from ptbtest import CallbackQueryGenerator
 from telegram import InlineKeyboardButton
 from telegram import InlineKeyboardMarkup
 from telegram.ext import CallbackQueryHandler
 from telegram.ext import Updater
 
+from ptbtest import CallbackQueryGenerator
 from ptbtest import ChatGenerator
 from ptbtest import MessageGenerator
 from ptbtest import Mockbot
@@ -18,6 +19,8 @@ https://github.com/python-telegram-bot/python-telegram-bot/blob/master/examples/
 We will skip the start and help callbacks and focus on the callback query.
 
 """
+
+
 class TestInlineKeyboard(unittest.TestCase):
     def setUp(self):
         # For use within the tests we nee some stuff. Starting with a Mockbot
@@ -37,6 +40,7 @@ class TestInlineKeyboard(unittest.TestCase):
             bot.editMessageText(text="Selected option: %s" % query.data,
                                 chat_id=query.message.chat_id,
                                 message_id=query.message.message_id)
+
         dp = self.updater.dispatcher
         dp.add_handler(CallbackQueryHandler(button))
         self.updater.start_polling()

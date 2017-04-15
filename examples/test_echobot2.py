@@ -18,6 +18,8 @@ This example follows the echobot2 example at:
 https://github.com/python-telegram-bot/python-telegram-bot/blob/master/examples/echobot2.py
 
 """
+
+
 class TestEchobot2(unittest.TestCase):
     def setUp(self):
         # For use within the tests we nee some stuff. Starting with a Mockbot
