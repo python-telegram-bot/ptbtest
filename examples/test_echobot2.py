@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+
 import unittest
 
 from telegram.ext import CommandHandler
@@ -28,6 +29,10 @@ class TestEchobot2(unittest.TestCase):
         self.mg = MessageGenerator(self.bot)
         self.updater = Updater(bot=self.bot)
 
+    def tearDown(self):
+        # Always stop the updater at the end of a test case so it won't hang.
+        self.updater.stop()
+
     def test_help(self):
         # this tests the help handler. So first insert the handler
         def help(bot, update):
@@ -47,8 +52,6 @@ class TestEchobot2(unittest.TestCase):
         sent = self.bot.sent_messages[0]
         self.assertEqual(sent['method'], "sendMessage")
         self.assertEqual(sent['text'], "Help!")
-        # Always stop the updater at the end of a testcase so it won't hang.
-        self.updater.stop()
 
     def test_start(self):
         def start(bot, update):
@@ -65,7 +68,6 @@ class TestEchobot2(unittest.TestCase):
         sent = self.bot.sent_messages[0]
         self.assertEqual(sent['method'], "sendMessage")
         self.assertEqual(sent['text'], "Hi!")
-        self.updater.stop()
 
     def test_echo(self):
         def echo(bot, update):
@@ -82,7 +84,6 @@ class TestEchobot2(unittest.TestCase):
         self.assertEqual(sent[0]['method'], "sendMessage")
         self.assertEqual(sent[0]['text'], "first message")
         self.assertEqual(sent[1]['text'], "second message")
-        self.updater.stop()
 
 
 if __name__ == '__main__':
