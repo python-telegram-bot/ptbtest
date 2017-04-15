@@ -1,8 +1,6 @@
 import codecs
 from distutils.core import setup
 
-from setuptools import find_packages
-
 with codecs.open("readme.rst", "r", "utf-8") as fd:
 
     setup(
