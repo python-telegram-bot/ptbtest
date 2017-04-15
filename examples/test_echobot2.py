@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+
 import unittest
 
 from telegram.ext import CommandHandler
@@ -17,6 +18,8 @@ This example follows the echobot2 example at:
 https://github.com/python-telegram-bot/python-telegram-bot/blob/master/examples/echobot2.py
 
 """
+
+
 class TestEchobot2(unittest.TestCase):
     def setUp(self):
         # For use within the tests we nee some stuff. Starting with a Mockbot
@@ -28,6 +31,10 @@ class TestEchobot2(unittest.TestCase):
         self.mg = MessageGenerator(self.bot)
         self.updater = Updater(bot=self.bot)
 
+    def tearDown(self):
+        # Always stop the updater at the end of a test case so it won't hang.
+        self.updater.stop()
+
     def test_help(self):
         # this tests the help handler. So first insert the handler
         def help(bot, update):
@@ -36,7 +43,7 @@ class TestEchobot2(unittest.TestCase):
         # Then register the handler with he updater's dispatcher and start polling
         self.updater.dispatcher.add_handler(CommandHandler("help", help))
         self.updater.start_polling()
-        # We want to simulate a message. Since we don't care wich user sends it we let the MessageGenerator
+        # We want to simulate a message. Since we don't care which user sends it we let the MessageGenerator
         # create random ones
         update = self.mg.get_message(text="/help")
         # We insert the update with the bot so the updater can retrieve it.
@@ -47,8 +54,6 @@ class TestEchobot2(unittest.TestCase):
         sent = self.bot.sent_messages[0]
         self.assertEqual(sent['method'], "sendMessage")
         self.assertEqual(sent['text'], "Help!")
-        # Always stop the updater at the end of a testcase so it won't hang.
-        self.updater.stop()
 
     def test_start(self):
         def start(bot, update):
@@ -65,7 +70,6 @@ class TestEchobot2(unittest.TestCase):
         sent = self.bot.sent_messages[0]
         self.assertEqual(sent['method'], "sendMessage")
         self.assertEqual(sent['text'], "Hi!")
-        self.updater.stop()
 
     def test_echo(self):
         def echo(bot, update):
@@ -82,7 +86,6 @@ class TestEchobot2(unittest.TestCase):
         self.assertEqual(sent[0]['method'], "sendMessage")
         self.assertEqual(sent[0]['text'], "first message")
         self.assertEqual(sent[1]['text'], "second message")
-        self.updater.stop()
 
 
 if __name__ == '__main__':

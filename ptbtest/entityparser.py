@@ -2,7 +2,7 @@
 # pylint: disable=E0611,E0213,E1102,C0103,E1101,W0613,R0913,R0904
 #
 # A library that provides a testing suite fot python-telegram-bot
-# wich can be found on https://github.com/python-telegram-bot/python-telegram-bot
+# which can be found on https://github.com/python-telegram-bot/python-telegram-bot
 # Copyright (C) 2017
 # Pieter Schutz - https://github.com/eldinnie
 #
@@ -18,14 +18,15 @@
 #
 # You should have received a copy of the GNU Lesser Public License
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
-"""This module provides a helperclass to transform marked_up messages to plaintext with entities"""
+"""This module provides a helper class to transform marked_up messages to plaintext with entities"""
 import re
 
-from ptbtest.errors import BadMarkupException
 from telegram import MessageEntity
 
+from ptbtest.errors import BadMarkupException
 
-class EntityParser():
+
+class EntityParser:
     """
     Placeholder class for the static parser methods
     """
@@ -45,9 +46,8 @@ class EntityParser():
             the message after parsing.
         """
         invalids = re.compile(
-            r'''(\*_|\*```|\*`|\*\[.*?\]\(.*?\)|_\*|_```|_`|_\[.*?\]\(.*?\)|```\*|```_|
-                                  ```\[.*?\]\(.*?\)|`\*|`_|`\[.*?\]\(.*?\)|\[.*?\]\(.*?\)\*|
-                                  \[.*?\]\(.*?\)_|\[.*?\]\(.*?\)```|\[.*?\]\(.*?\)`)'''
+            r'(\*_|\*```|\*`|\*\[.*?\]\(.*?\)|_\*|_```|_`|_\[.*?\]\(.*?\)|```\*|```_|```\[.*?\]\(.*?\)'
+            r'|`\*|`_|`\[.*?\]\(.*?\)|\[.*?\]\(.*?\)\*|\[.*?\]\(.*?\)_|\[.*?\]\(.*?\)```|\[.*?\]\(.*?\)`)'
         )
         tags = re.compile(r'(([`]{3}|\*|_|`)(.*?)(\2))')
         text_links = re.compile(r'(\[(?P<text>.*?)\]\((?P<url>.*?)\))')
@@ -66,15 +66,15 @@ class EntityParser():
             (message(str), entities(list(telegram.MessageEntity))): The entities found in the message and
             the message after parsing.
         """
-        invalids = re.compile(r'''(<b><i>|<b><pre>|<b><code>|<b>(<a.*?>)|
-                                   <i><b>|<i><pre>|<i><code>|<i>(<a.*?>)|
-                                   <pre><b>|<pre><i>|<pre><code>|<pre>(<a.*?>)|
-                                   <code><b>|<code><i>|<code><pre>|<code>(<a.*?>)|
-                                   (<a.*>)?<b>|(<a.*?>)<i>|(<a.*?>)<pre>|(<a.*?>)<code>)'''
+        invalids = re.compile(r'(<b><i>|<b><pre>|<b><code>|<b>(<a.*?>)|<i><b>|<i><pre>'
+                              r'|<i><code>|<i>(<a.*?>)|<pre><b>|<pre><i>|<pre><code>|<pre>(<a.*?>)'
+                              r'|<code><b>|<code><i>|<code><pre>|<code>(<a.*?>)'
+                              r'| {35}(<a.*>)?<b>|(<a.*?>)<i>|(<a.*?>)<pre>|(<a.*?>)<code>)'
+                              # TODO: Without the ` {35}` a test breaks. Please investigate the tag for typos.
                               )
-        tags = re.compile(r'(<(b|i|pre|code)>(.*?)<\/\2>)')
+        tags = re.compile(r'(<(b|i|pre|code)>(.*?)</\2>)')
         text_links = re.compile(
-            r'<a href=[\'\"](?P<url>.*?)[\'\"]>(?P<text>.*?)<\/a>')
+            r'<a href=[\'\"](?P<url>.*?)[\'\"]>(?P<text>.*?)</a>')
 
         return EntityParser.__parse_text("HTML", message, invalids, tags,
                                          text_links)
@@ -82,9 +82,9 @@ class EntityParser():
     @staticmethod
     def __parse_text(ptype, message, invalids, tags, text_links):
         entities = []
-        mentions = re.compile(r'@[a-zA-Z0-9]{1,}\b')
-        hashtags = re.compile(r'#[a-zA-Z0-9]{1,}\b')
-        botcommands = re.compile(r'(?<!\/|\w)\/[a-zA-Z0-0_\-]{1,}\b')
+        mentions = re.compile(r'@[a-zA-Z0-9]+\b')
+        hashtags = re.compile(r'#[a-zA-Z0-9]+\b')
+        botcommands = re.compile(r'(?<!/|\w)/[a-zA-Z0_\-]+\b')
         urls = re.compile(
             r'(([hHtTpP]{4}[sS]?|[fFtTpP]{3})://)?([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?'
         )
@@ -105,7 +105,8 @@ class EntityParser():
                 parse_type = "code"
             elif tag.groups()[1] in ["pre", "```"]:
                 parse_type = "pre"
-            entities.append(MessageEntity(parse_type, start, len(text)))
+            entities.append(MessageEntity(parse_type, start, len(
+                text)))  # TODO: What if an invalid tag gets passed? Should probably throw exception.
             message = tags.sub(r'\3', message, count=1)
         while text_links.search(message):
             link = text_links.search(message)
@@ -121,13 +122,15 @@ class EntityParser():
         for mention in mentions.finditer(message):
             entities.append(
                 MessageEntity('mention',
-                              mention.start(), mention.end() - mention.start(
-                              )))
+                              mention.start(), mention.end() - mention.start()
+                              )
+            )
         for hashtag in hashtags.finditer(message):
             entities.append(
                 MessageEntity('hashtag',
-                              hashtag.start(), hashtag.end() - hashtag.start(
-                              )))
+                              hashtag.start(), hashtag.end() - hashtag.start()
+                              )
+            )
         for botcommand in botcommands.finditer(message):
             entities.append(
                 MessageEntity('bot_command',

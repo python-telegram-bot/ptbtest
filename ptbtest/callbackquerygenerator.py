@@ -2,7 +2,7 @@
 # pylint: disable=E0611,E0213,E1102,C0103,E1101,W0613,R0913,R0904
 #
 # A library that provides a testing suite fot python-telegram-bot
-# wich can be found on https://github.com/python-telegram-bot/python-telegram-bot
+# which can be found on https://github.com/python-telegram-bot/python-telegram-bot
 # Copyright (C) 2017
 # Pieter Schutz - https://github.com/eldinnie
 #
@@ -21,12 +21,13 @@
 """This module provides a class to generate telegram callback queries"""
 import uuid
 
-from .updategenerator import update
-from .ptbgenerator import PtbGenerator
+from telegram import (CallbackQuery, Message, User)
+
 from ptbtest import (ChatGenerator, MessageGenerator, Mockbot, UserGenerator)
 from ptbtest.errors import (BadBotException, BadCallbackQueryException,
                             BadMessageException, BadUserException)
-from telegram import (CallbackQuery, Message, User)
+from .ptbgenerator import PtbGenerator
+from .updategenerator import update
 
 
 class CallbackQueryGenerator(PtbGenerator):
@@ -37,7 +38,7 @@ class CallbackQueryGenerator(PtbGenerator):
             bot (ptbtest.Mockbot): Bot to encode with the messages
 
         Args:
-            bot (Optional[ptbtest.Mockbot]): supply your own for a custom botname
+            bot (Optional[ptbtest.Mockbot]): supply your own for a custom bot name
     """
 
     def __init__(self, bot=None):
@@ -118,5 +119,6 @@ class CallbackQueryGenerator(PtbGenerator):
                              data, inline_message_id, game_short_name,
                              self.bot)
 
-    def _gen_id(self):
+    @staticmethod
+    def _gen_id():
         return str(uuid.uuid4())

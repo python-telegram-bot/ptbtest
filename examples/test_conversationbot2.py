@@ -1,7 +1,7 @@
 from __future__ import absolute_import
+
 import unittest
 
-from ptbtest import UserGenerator
 from telegram import ReplyKeyboardMarkup
 from telegram.ext import CommandHandler
 from telegram.ext import ConversationHandler
@@ -13,6 +13,7 @@ from telegram.ext import Updater
 from ptbtest import ChatGenerator
 from ptbtest import MessageGenerator
 from ptbtest import Mockbot
+from ptbtest import UserGenerator
 
 """
 This is an example to show how the ptbtest suite can be used.
@@ -112,7 +113,7 @@ class TestConversationbot2(unittest.TestCase):
         self.updater.start_polling()
 
         # We are going to test a conversationhandler. Since this is tied in with user and chat we need to
-        # create both for consistancy
+        # create both for consistency
         user = self.ug.get_user()
         chat = self.cg.get_chat(type="group")
         user2 = self.ug.get_user()

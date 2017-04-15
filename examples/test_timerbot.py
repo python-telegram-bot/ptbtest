@@ -1,7 +1,7 @@
 from __future__ import absolute_import
-import unittest
 
 import time
+import unittest
 
 from telegram.ext import CommandHandler
 from telegram.ext import Job
@@ -18,6 +18,8 @@ https://github.com/python-telegram-bot/python-telegram-bot/blob/master/examples/
 We will skip the start and help handlers and focus on the timer.
 
 """
+
+
 class Testtimerbot(unittest.TestCase):
     def setUp(self):
         # For use within the tests we nee some stuff. Starting with a Mockbot
@@ -66,6 +68,7 @@ class Testtimerbot(unittest.TestCase):
             del chat_data['job']
 
             update.message.reply_text('Timer successfully unset!')
+
         # Now add those handlers to the updater and start polling
         dp = self.updater.dispatcher
         dp.add_handler(CommandHandler("set", set,

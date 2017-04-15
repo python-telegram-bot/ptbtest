@@ -2,7 +2,7 @@
 # pylint: disable=E0611,E0213,E1102,C0103,E1101,W0613,R0913,R0904
 #
 # A library that provides a testing suite fot python-telegram-bot
-# wich can be found on https://github.com/python-telegram-bot/python-telegram-bot
+# which can be found on https://github.com/python-telegram-bot/python-telegram-bot
 # Copyright (C) 2017
 # Pieter Schutz - https://github.com/eldinnie
 #
@@ -18,19 +18,20 @@
 #
 # You should have received a copy of the GNU Lesser Public License
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
-"""This module provides a class to generate telegram mesages"""
+"""This module provides a class to generate telegram messages"""
 import datetime
 import time
 
-from .updategenerator import update
-from .ptbgenerator import PtbGenerator
-from .entityparser import EntityParser
+from telegram import (Audio, Chat, Contact, Document, Location, Message,
+                      PhotoSize, Sticker, User, Venue, Video, Voice)
+
 from ptbtest import (UserGenerator, ChatGenerator, Mockbot)
 from ptbtest.errors import (BadUserException, BadMessageException,
                             BadChatException, BadBotException,
                             BadMarkupException)
-from telegram import (Audio, Chat, Contact, Document, Location, Message,
-                      PhotoSize, Sticker, User, Venue, Video, Voice)
+from .entityparser import EntityParser
+from .ptbgenerator import PtbGenerator
+from .updategenerator import update
 
 
 class MessageGenerator(PtbGenerator):
@@ -41,7 +42,7 @@ class MessageGenerator(PtbGenerator):
             bot (ptbtest.Mockbot): Bot to encode with the messages
 
         Args:
-            bot (Optional[ptbtest.Mockbot]): supply your own for a custom botname
+            bot (Optional[ptbtest.Mockbot]): supply your own for a custom bot name
     """
 
     def __init__(self, bot=None):
@@ -56,7 +57,8 @@ class MessageGenerator(PtbGenerator):
         else:
             raise BadBotException
 
-    def _gen_id(self):
+    @staticmethod
+    def _gen_id():
         x = 1
         while True:
             yield x

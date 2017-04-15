@@ -2,7 +2,7 @@
 # pylint: disable=E0611,E0213,E1102,C0103,E1101,W0613,R0913,R0904
 #
 # A library that provides a testing suite fot python-telegram-bot
-# wich can be found on https://github.com/python-telegram-bot/python-telegram-bot
+# which can be found on https://github.com/python-telegram-bot/python-telegram-bot
 # Copyright (C) 2017
 # Pieter Schutz - https://github.com/eldinnie
 #
@@ -22,9 +22,8 @@
 
 import functools
 import logging
-import warnings
-
 import time
+import warnings
 
 from telegram import (User, ReplyMarkup, TelegramObject)
 from telegram.error import TelegramError
@@ -35,7 +34,7 @@ logging.getLogger(__name__).addHandler(logging.NullHandler())
 class Mockbot(TelegramObject):
     """
     The Mockbot is a fake telegram-bot that does not require a token or a connection to the telegram
-    servers. It's used to mimmick all methods of python-telegram-bot instance, but never contact the telegram servers.
+    servers. It's used to mimic all methods of python-telegram-bot instance, but never contact the telegram servers.
     All methods as described in :py:class:`telegram.Bot` are functional and described here are only
     the special methods added for testing functionality
 
@@ -262,8 +261,7 @@ class Mockbot(TelegramObject):
                   reply_markup=None,
                   timeout=None,
                   **kwargs):
-        data = {'chat_id': chat_id, 'audio': audio}
-        data['audio2'] = {'file_id': audio}
+        data = {'chat_id': chat_id, 'audio': audio, 'audio2': {'file_id': audio}}
         if duration:
             data['duration'] = duration
             data['audio2']['duration'] = duration
@@ -518,22 +516,17 @@ class Mockbot(TelegramObject):
         self._sendmessages.append(data)
 
     def getFile(self, file_id, timeout=None, **kwargs):
-        data = {'file_id': file_id}
+        data = {'file_id': file_id, 'method': "getFile"}
 
-        data['method'] = "getFile"
         self._sendmessages.append(data)
 
     def kickChatMember(self, chat_id, user_id, timeout=None, **kwargs):
-        data = {'chat_id': chat_id, 'user_id': user_id}
-
-        data['method'] = "kickChatMember"
+        data = {'chat_id': chat_id, 'user_id': user_id, 'method': "kickChatMember"}
 
         self._sendmessages.append(data)
 
     def unbanChatMember(self, chat_id, user_id, timeout=None, **kwargs):
-        data = {'chat_id': chat_id, 'user_id': user_id}
-
-        data['method'] = "unbanChatMember"
+        data = {'chat_id': chat_id, 'user_id': user_id, 'method': "unbanChatMember"}
 
         self._sendmessages.append(data)
 
@@ -595,8 +588,7 @@ class Mockbot(TelegramObject):
                            reply_markup=None,
                            timeout=None,
                            **kwargs):
-        if inline_message_id is None and (chat_id is None or
-                                          message_id is None):
+        if inline_message_id is None and (chat_id is None or message_id is None):
             raise TelegramError(
                 'editMessageCaption: Both chat_id and message_id are required when '
                 'inline_message_id is not specified')
@@ -622,8 +614,7 @@ class Mockbot(TelegramObject):
                                reply_markup=None,
                                timeout=None,
                                **kwargs):
-        if inline_message_id is None and (chat_id is None or
-                                          message_id is None):
+        if inline_message_id is None and (chat_id is None or message_id is None):
             raise TelegramError(
                 'editMessageCaption: Both chat_id and message_id are required when '
                 'inline_message_id is not specified')
@@ -641,7 +632,7 @@ class Mockbot(TelegramObject):
 
     def insertUpdate(self, update):
         """
-        This inserts an update into the the bot's storage. these will be retreived on a call to
+        This inserts an update into the the bot's storage. these will be retrieved on a call to
         getUpdates which is used by the :py:class:`telegram.Updater`. This way the updater can function without any
         modifications.
 
@@ -668,37 +659,27 @@ class Mockbot(TelegramObject):
         return None
 
     def leaveChat(self, chat_id, timeout=None, **kwargs):
-        data = {'chat_id': chat_id}
-
-        data['method'] = "leaveChat"
+        data = {'chat_id': chat_id, 'method': "leaveChat"}
 
         self._sendmessages.append(data)
 
     def getChat(self, chat_id, timeout=None, **kwargs):
-        data = {'chat_id': chat_id}
-
-        data['method'] = "getChat"
+        data = {'chat_id': chat_id, 'method': "getChat"}
 
         self._sendmessages.append(data)
 
     def getChatAdministrators(self, chat_id, timeout=None, **kwargs):
-        data = {'chat_id': chat_id}
-
-        data['method'] = "getChatAdministrators"
+        data = {'chat_id': chat_id, 'method': "getChatAdministrators"}
 
         self._sendmessages.append(data)
 
     def getChatMembersCount(self, chat_id, timeout=None, **kwargs):
-        data = {'chat_id': chat_id}
-
-        data['method'] = "getChatMembersCount"
+        data = {'chat_id': chat_id, 'method': "getChatMembersCount"}
 
         self._sendmessages.append(data)
 
     def getChatMember(self, chat_id, user_id, timeout=None, **kwargs):
-        data = {'chat_id': chat_id, 'user_id': user_id}
-
-        data['method'] = "getChatMember"
+        data = {'chat_id': chat_id, 'user_id': user_id, 'method': "getChatMember"}
 
         self._sendmessages.append(data)
 
