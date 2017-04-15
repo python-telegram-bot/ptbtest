@@ -22,11 +22,12 @@
 import uuid
 
 from telegram import ChosenInlineResult
-from .updategenerator import update
-from .ptbgenerator import PtbGenerator
+from telegram import (InlineQuery, Location, User)
+
 from ptbtest import (Mockbot, UserGenerator)
 from ptbtest.errors import (BadBotException, BadUserException)
-from telegram import (InlineQuery, Location, User)
+from .ptbgenerator import PtbGenerator
+from .updategenerator import update
 
 
 class InlineQueryGenerator(PtbGenerator):
@@ -160,5 +161,6 @@ class InlineQueryGenerator(PtbGenerator):
             location=location,
             inline_message_id=inline_message_id)
 
-    def _gen_id(self):
+    @staticmethod
+    def _gen_id():
         return str(uuid.uuid4())

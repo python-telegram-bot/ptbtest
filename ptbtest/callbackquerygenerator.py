@@ -21,12 +21,13 @@
 """This module provides a class to generate telegram callback queries"""
 import uuid
 
-from .updategenerator import update
-from .ptbgenerator import PtbGenerator
+from telegram import (CallbackQuery, Message, User)
+
 from ptbtest import (ChatGenerator, MessageGenerator, Mockbot, UserGenerator)
 from ptbtest.errors import (BadBotException, BadCallbackQueryException,
                             BadMessageException, BadUserException)
-from telegram import (CallbackQuery, Message, User)
+from .ptbgenerator import PtbGenerator
+from .updategenerator import update
 
 
 class CallbackQueryGenerator(PtbGenerator):
@@ -118,5 +119,6 @@ class CallbackQueryGenerator(PtbGenerator):
                              data, inline_message_id, game_short_name,
                              self.bot)
 
-    def _gen_id(self):
+    @staticmethod
+    def _gen_id():
         return str(uuid.uuid4())

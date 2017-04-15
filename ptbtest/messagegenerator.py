@@ -22,15 +22,16 @@
 import datetime
 import time
 
-from .updategenerator import update
-from .ptbgenerator import PtbGenerator
-from .entityparser import EntityParser
+from telegram import (Audio, Chat, Contact, Document, Location, Message,
+                      PhotoSize, Sticker, User, Venue, Video, Voice)
+
 from ptbtest import (UserGenerator, ChatGenerator, Mockbot)
 from ptbtest.errors import (BadUserException, BadMessageException,
                             BadChatException, BadBotException,
                             BadMarkupException)
-from telegram import (Audio, Chat, Contact, Document, Location, Message,
-                      PhotoSize, Sticker, User, Venue, Video, Voice)
+from .entityparser import EntityParser
+from .ptbgenerator import PtbGenerator
+from .updategenerator import update
 
 
 class MessageGenerator(PtbGenerator):
@@ -56,7 +57,8 @@ class MessageGenerator(PtbGenerator):
         else:
             raise BadBotException
 
-    def _gen_id(self):
+    @staticmethod
+    def _gen_id():
         x = 1
         while True:
             yield x
