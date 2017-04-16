@@ -1,1 +1,1 @@
-https://github.com/p-e git://github.com/python-telegram-bot/python-telegram-bot.git@44d7bad11c0611a5781a1ff801e21aa8869ddb8f#egg=telegram
+-e git://github.com/python-telegram-bot/python-telegram-bot.git@44d7bad11c0611a5781a1ff801e21aa8869ddb8f#egg=python-telegram-bot
