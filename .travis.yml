@@ -18,5 +18,5 @@ install:
 script:
   - nosetests -v  --with-coverage --cover-package=ptbtest/
 after_success:
-  coveralls
-  codecov
+  - coveralls
+  - codecov
