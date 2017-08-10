@@ -15,7 +15,6 @@ install:
   - pip install codecov
   - pip install -r requirements.txt
   - pip install -r requirements-dev.txt
-  - pip install https://github.com/python-telegram-bot/python-telegram-bot/archive/master.zip -U
 script:
   - nosetests -v  --with-coverage --cover-package=ptbtest/
 after_success:
