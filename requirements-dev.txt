@@ -1,5 +1,4 @@
 coverage
 nose
-https://github.com/python-telegram-bot/python-telegram-bot/archive/master.zip
-pre-commit
+python-telegram-bot
 pre-commit-hooks
