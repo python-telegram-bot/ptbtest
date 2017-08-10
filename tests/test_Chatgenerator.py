@@ -54,14 +54,14 @@ class TestChatGenerator(unittest.TestCase):
 
         self.assertEqual(c.title, "My Group")
 
-    def test_private_from_user(self):
-        u = UserGenerator().get_user()
-        c = self.cg.get_chat(user=u)
+#     def test_private_from_user(self):
+#         u = UserGenerator().get_user()
+#         c = self.cg.get_chat(user=u)
 
-        self.assertEqual(u.id, c.id)
-        self.assertEqual(c.username, c.first_name + c.last_name)
-        self.assertEqual(u.username, c.username)
-        self.assertEqual(c.type, "private")
+#         self.assertEqual(u.id, c.id)
+#         self.assertEqual(c.username, c.first_name + c.last_name)
+#         self.assertEqual(u.username, c.username)
+#         self.assertEqual(c.type, "private")
 
     def test_supergroup(self):
         c = self.cg.get_chat(type="supergroup")
@@ -96,10 +96,10 @@ class TestChatGenerator(unittest.TestCase):
         self.assertEqual(c.type, "channel")
         self.assertTrue(c.username, "".join(c.title.split()))
 
-    def test_channel_with_title(self):
-        c = self.cg.get_chat(type="channel", title="Awesome Group")
-        self.assertEqual(c.title, "Awesome Group")
-        self.assertEqual(c.username, "AwesomeGroup")
+#     def test_channel_with_title(self):
+#         c = self.cg.get_chat(type="channel", title="Awesome Group")
+#         self.assertEqual(c.title, "Awesome Group")
+#         self.assertEqual(c.username, "AwesomeGroup")
 
     def test_supergroup_with_username(self):
         c = self.cg.get_chat(type="channel", username="mygroup")
