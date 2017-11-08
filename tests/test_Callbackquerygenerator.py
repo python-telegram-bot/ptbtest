@@ -19,6 +19,9 @@
 # You should have received a copy of the GNU Lesser Public License
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
 from __future__ import absolute_import
+from os import sys
+sys.path.append("..")
+
 import unittest
 
 from ptbtest import (BadBotException, BadCallbackQueryException,
