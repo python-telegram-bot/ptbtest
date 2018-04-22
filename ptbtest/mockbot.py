@@ -30,6 +30,7 @@ from telegram import (User, ReplyMarkup, TelegramObject)
 from telegram.utils.request import Request
 from telegram.error import TelegramError
 
+
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 
@@ -667,6 +668,9 @@ class Mockbot(TelegramObject):
                    certificate=None,
                    timeout=None,
                    **kwargs):
+        return None
+
+    def delete_webhook(self, timeout=None, **kwargs):
         return None
 
     def leaveChat(self, chat_id, timeout=None, **kwargs):
