@@ -272,16 +272,16 @@ class TestMessageGeneratorStatusMessages(unittest.TestCase):
         self.ug = UserGenerator()
         self.cg = ChatGenerator()
 
-    def test_new_chat_member(self):
+    def test_new_chat_members(self):
         user = self.ug.get_user()
         chat = self.cg.get_chat(type="group")
-        u = self.mg.get_message(chat=chat, new_chat_member=user)
-        self.assertEqual(u.message.new_chat_member.id, user.id)
+        u = self.mg.get_message(chat=chat, new_chat_members=[user])
+        self.assertEqual(u.message.new_chat_members[0].id, user.id)
 
         with self.assertRaises(BadChatException):
-            self.mg.get_message(new_chat_member=user)
+            self.mg.get_message(new_chat_members=[user])
         with self.assertRaises(BadUserException):
-            self.mg.get_message(chat=chat, new_chat_member="user")
+            self.mg.get_message(chat=chat, new_chat_members=["user"])
 
     def test_left_chat_member(self):
         user = self.ug.get_user()
@@ -337,7 +337,7 @@ class TestMessageGeneratorStatusMessages(unittest.TestCase):
         with self.assertRaises(BadMessageException):
             self.mg.get_message(
                 private=False,
-                new_chat_member=self.ug.get_user(),
+                new_chat_members=self.ug.get_user(),
                 new_chat_title="New title")
 
 
