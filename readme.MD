@@ -1,6 +1,28 @@
 # Maintainer Wanted
 
-This project is currently unmaintained and is looking for a new maintainer. Please see [Issue #21](https://github.com/python-telegram-bot/ptbtest/issues/21) for details.
+Hi.
+
+Occasionally the developer team of [PTB](https://python-telegram-bot.org) is being asked about the status of this library, [ptbtest](https://pypi.org/project/ptbtest/), which is intended to help write unit tests for bots built with `python-telegram-bot`.
+
+`ptbtest` is currently not maintained and not compatible with recent PTB versions. The former maintainer has transferred the ownership of the [repository](https://github.com/python-telegram-bot/ptbtest) to PTBs dev team. However, we have no resources to maintain `ptbtest` in addition to PTB.
+
+Since we have seen some interest from the community in the continuation of `ptbtest`, we would like to start a search for a new maintainer/developer team. A new maintainer/dev team would be responsible for adapting `ptbtest` to new PTB releases, fixing bugs in `ptbtest` and releasing new versions to PyPi when appropriate. Of course a new maintainer/dev team would be given the appropriate access rights and ownerships. Please note that we are looking for people, who are willing to be committed to the project in the mid to long term, i.e. rather a few years than a few month. Moreover, `ptbtest` is currently a pure spare-time project, so a maintainer/dev team would not get paid for their work (as is the case for `python-telegram-bot`).
+
+As our goal is for the library to maintained by members of the PTB community, we would prefer to intervene as little as possible in the search for a new maintainer/dev team. We therefore created a group chat where you can get in contact with other interested people and exchange about your different insights on `ptbtest`, Python packaging and open source development. To join the chat, please contact [@BiboJoshi](https://t.me/BiboJoshi), [@Poolitzer](https://t.me/Poolitzer) or [@Hoppingturtles](https://t.me/Hoppingturtles) on Telegram.
+
+Of course, we'd like to make sure for `ptbtest` to be in good hands. On the other hand, deciding who the right maintainer/dev team might be, is not easy. E.g. we are aware that there are some forks of `ptbtest`, but we are not familiar with the exact status of each fork. We therefore decided on the following procedure:
+
+This search for a maintainer/dev team will stay open until the end of April. Until then, we ask the members of the group chat (see above) to elect one maintainer and optionally additional members of the development team. We expect the maintainer to be able to demonstrate experience with Python packaging, open source development and familiarity with `ptbtest`. If for example the elected person has published a non-trivial package on PyPi or is already a maintainer of another library (Python or other language) and uses `ptbtest` elaborately in as existing project or even has worked with the `ptbtest` source before, we can safely assume that these requirements are fulfilled. The cherry on the cake would be if the elected maintainer/dev team already submit some initial work on `ptbtest` until end of April.
+
+We emphasize that we ask for *one* maintainer to be elected who we can grant the access rights and ownerships.
+
+We are very looking forward to your involvement and hope that `ptbtest` will be continued.
+
+Your PTB Developer Team
+
+---
+
+Original readme below
 
 ---
 
