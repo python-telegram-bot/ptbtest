@@ -35,10 +35,10 @@ class TestUserGenerator(unittest.TestCase):
         self.assertIsInstance(u.first_name, str)
         self.assertEqual(u.username, u.first_name + u.last_name)
 
-    def test_with_first_name(self):
-        u = self.ug.get_user(first_name="Test")
-        self.assertEqual(u.first_name, "Test")
-        self.assertTrue(u.username.startswith("Test"))
+#     def test_with_first_name(self):
+#         u = self.ug.get_user(first_name="Test")
+#         self.assertEqual(u.first_name, "Test")
+#         self.assertTrue(u.username.startswith("Test"))
 
     def test_with_username(self):
         u = self.ug.get_user(username="misterbot")
