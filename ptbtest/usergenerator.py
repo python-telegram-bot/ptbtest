@@ -42,7 +42,7 @@ class UserGenerator(PtbGenerator):
         PtbGenerator.__init__(self)
 
     def get_user(self, first_name=None, last_name=None, username=None,
-                 id=None):
+                 id=None, is_bot=False):
         """
         Returns a telegram.User object with the optionally given name(s) or username
         If any of the arguments are omitted the names will be chosen randomly and the
@@ -66,5 +66,6 @@ class UserGenerator(PtbGenerator):
         return User(
             id or self.gen_id(),
             first_name,
+            is_bot=is_bot,
             last_name=last_name,
             username=username)

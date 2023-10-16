@@ -1,4 +1,6 @@
 from __future__ import absolute_import
+from os import sys
+sys.path.append("..")
 
 import unittest
 
