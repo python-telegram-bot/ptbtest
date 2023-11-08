@@ -150,7 +150,7 @@ class MessageGenerator(PtbGenerator):
                     contact=None,
                     location=None,
                     venue=None,
-                    new_chat_member=None,
+                    new_chat_members=None,
                     left_chat_member=None,
                     new_chat_title=None,
                     new_chat_photo=None,
@@ -185,7 +185,7 @@ class MessageGenerator(PtbGenerator):
             forward_from_chat (Optional[telegram.Chat]): channel this message is forwarded from
             forward_date (Optional[int]): Original sent date
             forward_from_message_id (Optional[int]): message id from forwarded channel post.
-            new_chat_member (Optional[telegram.User]): New member for this chat
+            new_chat_members (List[telegram.User]): Optional. Information about new members to the chat. (the bot itself may be one of these members).
             left_chat_member (Optional[telegram.User]): Member left this chat
             new_chat_title (Optional[str]): New title for the chat
             new_chat_photo (Optional[lst(telegram.Photosize)] or True): New picture for the group
@@ -225,7 +225,7 @@ class MessageGenerator(PtbGenerator):
         new_chat_photo = self._handle_status(
             channel_chat_created, chat, delete_chat_photo, group_chat_created,
             left_chat_member, migrate_from_chat_id, migrate_to_chat_id,
-            new_chat_member, new_chat_photo, new_chat_title, pinned_message,
+            new_chat_members, new_chat_photo, new_chat_title, pinned_message,
             supergroup_chat_created)
 
         audio, contact, document, location, photo, sticker, venue, video, voice = self._handle_attachments(
@@ -252,7 +252,7 @@ class MessageGenerator(PtbGenerator):
             contact=contact,
             location=location,
             venue=venue,
-            new_chat_member=new_chat_member,
+            new_chat_members=new_chat_members,
             left_chat_member=left_chat_member,
             new_chat_title=new_chat_title,
             new_chat_photo=new_chat_photo,
@@ -408,10 +408,10 @@ class MessageGenerator(PtbGenerator):
     def _handle_status(self, channel_chat_created, chat, delete_chat_photo,
                        group_chat_created, left_chat_member,
                        migrate_from_chat_id, migrate_to_chat_id,
-                       new_chat_member, new_chat_photo, new_chat_title,
+                       new_chat_members, new_chat_photo, new_chat_title,
                        pinned_message, supergroup_chat_created):
         status_messages = [
-            new_chat_member, left_chat_member, new_chat_title, new_chat_photo,
+            new_chat_members, left_chat_member, new_chat_title, new_chat_photo,
             delete_chat_photo, group_chat_created, supergroup_chat_created,
             channel_chat_created, migrate_to_chat_id, migrate_from_chat_id,
             pinned_message
@@ -419,11 +419,12 @@ class MessageGenerator(PtbGenerator):
         if len([x for x in status_messages if x]) > 1:
             raise BadMessageException(
                 "Limit to only one status message per message")
-        if new_chat_member:
-            if not isinstance(new_chat_member, User):
-                raise BadUserException
-            if chat.type == "private":
-                raise BadChatException("Can not add members to private chat")
+        if new_chat_members:
+            for new_chat_member in new_chat_members:
+                if not isinstance(new_chat_member, User):
+                    raise BadUserException
+                if chat.type == "private":
+                    raise BadChatException("Can not add members to private chat")
         if left_chat_member:
             if not isinstance(left_chat_member, User):
                 raise BadUserException
