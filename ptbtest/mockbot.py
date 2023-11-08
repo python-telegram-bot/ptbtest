@@ -27,6 +27,7 @@ import warnings
 import time
 
 from telegram import (User, ReplyMarkup, TelegramObject)
+from telegram.utils.request import Request
 from telegram.error import TelegramError
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
@@ -68,6 +69,7 @@ class Mockbot(TelegramObject):
         from .chatgenerator import ChatGenerator
         self.mg = MessageGenerator(bot=self)
         self.cg = ChatGenerator()
+        self.request = Request()
 
     @property
     def sent_messages(self):
@@ -190,7 +192,7 @@ class Mockbot(TelegramObject):
         return decorator
 
     def getMe(self, timeout=None, **kwargs):
-        self.bot = User(0, "Mockbot", last_name="Bot", username=self._username)
+        self.bot = User(0, "Mockbot", last_name="Bot", is_bot=True, username=self._username)
         return self.bot
 
     @message

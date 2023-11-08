@@ -19,6 +19,8 @@
 # You should have received a copy of the GNU Lesser Public License
 # along with this program.  If not, see [http://www.gnu.org/licenses/].
 from __future__ import absolute_import
+from os import sys
+sys.path.append("..")
 
 import unittest
 
@@ -47,7 +49,7 @@ class TestMockbot(unittest.TestCase):
         dp = updater.dispatcher
         dp.add_handler(CommandHandler("start", start))
         updater.start_polling()
-        user = User(id=1, first_name="test")
+        user = User(id=1, first_name="test", is_bot=False)
         chat = Chat(45, "group")
         message = Message(
             404, user, None, chat, text="/start", bot=self.mockbot)
